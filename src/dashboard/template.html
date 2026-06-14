@@ -432,6 +432,9 @@ document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>{
   t.classList.add("active");
   const pane=t.dataset.tab;
   document.querySelectorAll("[data-pane]").forEach(s=>s.classList.toggle("hide",s.dataset.pane!==pane));
+  // Re-render so charts that were built while their pane was hidden (0px wide)
+  // lay out correctly now that the pane is visible.
+  renderAll();
 }));
 
 /* ---------- boot ---------- */

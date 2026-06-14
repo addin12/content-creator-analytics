@@ -1,142 +1,140 @@
-# Creator Analytics Pipeline
+<div align="center">
+
+# 📊 Creator Analytics
+
+### One dashboard for a creator's whole presence — YouTube, Instagram & TikTok in a single view.
+
+An end-to-end data pipeline that pulls a creator's social metrics, models them, and ships an interactive, multi-platform analytics dashboard.
 
 [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://content-creator-analytics.streamlit.app)
 [![Deploy to Streamlit](https://img.shields.io/badge/Deploy%20to-Streamlit-FF4B4B?logo=streamlit&logoColor=white)](https://share.streamlit.io/deploy?repository=addin12%2Fcontent-creator-analytics&branch=main&mainModule=streamlit_app.py)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+![Zero-dependency demo](https://img.shields.io/badge/demo-zero%20dependencies-3fb950)
 
-End-to-end analytics for content creators: **acquire** social data (YouTube,
-Instagram, TikTok) → **normalize** → **aggregate** → **interactive dashboard**.
+**[🚀 Live demo](https://content-creator-analytics.streamlit.app)** · _(free-tier app sleeps after inactivity — first load takes ~30s)_
 
-> **Live demo:** https://content-creator-analytics.streamlit.app
-> _(free-tier apps sleep after inactivity and take ~30s to wake)_
+</div>
 
-It runs two ways:
+![Cross-platform overview](docs/img/01-overview.png)
 
-- **Demo mode** — a synthetic generator produces a full year of realistic data
-  with **zero credentials and zero dependencies** (Python stdlib only). One
-  command gives you a working dashboard.
-- **Live mode** — real API connectors activate automatically for any platform
-  whose credentials you've supplied. Anything not connected falls back to
-  synthetic, so the pipeline never half-breaks.
+---
 
-```
-acquire ──► data/raw/*.json ──► normalize ──► data/processed/{daily,posts}.json
-        └─ per-platform connector                       │
-                                                        ▼
-                              aggregate ──► data/processed/dashboard_data.json
-                                                        │
-                                                        ▼
-                                  render ──► dist/dashboard.html  (open in browser)
-```
+## Why
 
-## Quick start
+Creators live across three platforms that each report numbers differently — different metrics, different denominators, different (or no) revenue data. Pulling it together by hand every week is painful. This project automates the whole loop:
+
+> **acquire → normalize → aggregate → visualize**
+
+…and produces a single dashboard that answers the questions a creator actually cares about: *Where am I growing? What content works? When should I post? Where's the money coming from?*
+
+## ✨ Features
+
+- **🔌 Three platforms, one schema** — YouTube, Instagram & TikTok normalized into a single canonical model.
+- **🧪 Runs with zero setup** — a built-in synthetic generator produces a full, realistic year of data using only the Python standard library. `python run.py --demo` → instant dashboard.
+- **🔑 Live-ready** — real API connectors (YouTube Data + Analytics, Instagram Graph, TikTok) activate automatically when you add credentials; anything not connected stays synthetic, so it never half-breaks.
+- **📈 Four analytical views** — cross-platform overview, content performance, audience growth, and monetization.
+- **🎛️ Fully interactive** — toggle platforms, switch the time range (30 / 90 / 180 / 365 days), and sort the content table — everything recomputes client-side.
+- **💸 Honest monetization model** — real ad RPM for YouTube; transparent, configurable *estimates* for Instagram (sponsor value from reach) and TikTok (Creativity Program payout).
+- **☁️ One-click deploy** to Streamlit Community Cloud (free).
+
+## 🖼️ Screenshots
+
+### Cross-platform Overview
+Headline KPIs with 30-day deltas, views & engagement trends, audience split, and engagement rate by platform.
+![Overview](docs/img/01-overview.png)
+
+### Content Performance
+What formats resonate, the best day of the week to post, and a sortable table of top-performing content.
+![Content performance](docs/img/02-content.png)
+
+### Audience Growth
+Cumulative follower growth, net new followers per month, and a per-platform growth summary.
+![Audience growth](docs/img/03-audience.png)
+
+### Monetization
+Estimated revenue over time, revenue mix, and efficiency (effective RPM & revenue per follower).
+![Monetization](docs/img/04-monetization.png)
+
+## 🚀 Quick start
 
 ```bash
+# Zero credentials, zero dependencies — synthetic demo:
 python run.py --demo --open
 ```
 
-That generates synthetic data for all three platforms and opens
-`dist/dashboard.html`. No `pip install` required.
+That generates a full year of data for all three platforms and opens `dist/dashboard.html`.
 
-For live data and config files:
+For the hosted app or live data:
 
 ```bash
 pip install -r requirements.txt
-cp .env.example .env          # add your tokens
-python run.py --open          # auto: live where connected, synthetic elsewhere
+streamlit run streamlit_app.py          # local Streamlit app
+# — or —
+python run.py --open                     # auto: live where connected, synthetic elsewhere
 ```
 
-## CLI
+### CLI
 
 ```bash
-python run.py                       # auto mode
-python run.py --demo                # force synthetic (no creds)
-python run.py --live                # force live (errors if creds missing)
-python run.py --platforms youtube,tiktok
-python run.py --config config/creators.yaml
-python run.py --open                # open dashboard when done
+python run.py --demo                      # force synthetic
+python run.py --live                      # force live (errors if creds missing)
+python run.py --platforms youtube,tiktok  # subset
+python run.py --config config/creators.yaml --open
 ```
 
-## The dashboard
+## ☁️ Deploy to Streamlit (free)
 
-Self-contained single HTML file (Chart.js from CDN). Four tabs:
-
-| Tab | What it shows |
-|-----|----------------|
-| **Cross-platform Overview** | Views & engagement over time, audience share, engagement rate by platform |
-| **Content Performance** | Engagement rate by format, best day to post, sortable top-content table |
-| **Audience Growth** | Cumulative follower growth, net new followers/month, growth summary |
-| **Monetization** | Estimated revenue over time, revenue mix, RPM & rev/follower efficiency |
-
-Interactive: toggle platforms, switch the time range (30/90/180/365 days), and
-sort the content table by any column. Everything recomputes client-side.
-
-## Deploy to Streamlit Community Cloud (free)
-
-The repo includes `streamlit_app.py`, which reuses the same pipeline and embeds
-the dashboard, so the hosted app looks identical to the static file.
-
-1. Go to **https://share.streamlit.io** and sign in with GitHub.
+1. Go to **[share.streamlit.io](https://share.streamlit.io)** → sign in with GitHub.
 2. **Create app → Deploy a public app from GitHub.**
-3. Repository: `addin12/content-creator-analytics` · Branch: `main` ·
-   Main file: `streamlit_app.py`.
-4. **Deploy.** First build installs `requirements.txt` (a few minutes).
+3. Repo `addin12/content-creator-analytics` · Branch `main` · Main file `streamlit_app.py`.
+4. **Deploy.** Runs the synthetic demo out of the box.
 
-It runs the synthetic demo out of the box. For live data, open
-**Manage app → Settings → Secrets** and paste the filled-in values from
-`.streamlit/secrets.example.toml`, then pick **Live (from secrets)** in the
-sidebar.
+For live data, add tokens under **Settings → Secrets** (see `.streamlit/secrets.example.toml`) and pick **Live (from secrets)** in the sidebar.
 
-Run the hosted app locally too:
-
-```bash
-pip install -r requirements.txt
-streamlit run streamlit_app.py
-```
-
-## Architecture
+## 🧠 How it works
 
 ```
-src/
-  schema.py            Canonical record shapes + shared helpers
-  ingest/
-    base.py            Connector interface + mode-aware resolver (demo/live/auto)
-    synthetic.py       Statistical data generator (growth, seasonality, RPM models)
-    youtube.py         YouTube Data API v3 + Analytics API v2
-    instagram.py       Instagram Graph API (insights + media)
-    tiktok.py          TikTok for Developers (Display/Research API)
-  transform/
-    normalize.py       Raw → canonical (adds engagements, rates, net follower change)
-  analytics/
-    build_data.py      Canonical → the dashboard DATA object (KPIs, monthly,
-                       format/weekday performance, top posts)
-  dashboard/
-    template.html      Dashboard shell with a __DATA_JSON__ injection point
-    build.py           Renders DATA into a standalone HTML file
-  pipeline.py          Orchestrates the four stages
-run.py                 CLI
-config/creators.yaml   Per-client config (optional)
+   acquire ─────────► data/raw/*.json
+   (per-platform                │
+    connector)         normalize ─────► data/processed/{daily,posts}.json
+                                 │
+                       aggregate ─────► data/processed/dashboard_data.json
+                                 │
+                          render ─────► dist/dashboard.html  ·  streamlit_app.py
 ```
 
-Adding a platform = write one `Connector` subclass that emits the canonical
-record shapes in `schema.py`. Nothing else changes.
+| Stage | Module | Responsibility |
+|---|---|---|
+| **Acquire** | `src/ingest/` | Per-platform connectors. `synthetic.py` (zero-cred) + `youtube.py` / `instagram.py` / `tiktok.py` (live). A mode-aware resolver picks live-or-synthetic per platform. |
+| **Normalize** | `src/transform/` | Raw → canonical records; derives engagements, engagement rate, net follower change. |
+| **Aggregate** | `src/analytics/` | Canonical → the dashboard `DATA` object: KPIs (30d vs prior-30d), monthly rollups, format & weekday performance, top posts. |
+| **Render** | `src/dashboard/` | Injects `DATA` into a self-contained Chart.js template → standalone HTML. |
+| **Serve** | `streamlit_app.py` | Reuses the exact pipeline and embeds the dashboard for hosting. |
 
-## Getting live credentials
+**Adding a platform** = write one `Connector` subclass that emits the canonical record shapes. Nothing else changes.
+
+## 🔑 Connecting live data
 
 | Platform | Needs | Notes |
-|----------|-------|-------|
-| **YouTube** | OAuth client + refresh token, or API key | Analytics & `estimatedRevenue` require the `yt-analytics-monetary.readonly` scope and channel ownership. |
-| **Instagram** | Business/Creator account, Graph API long-lived token | No revenue field — sponsor value is **estimated from reach** (`sponsor_rpm`). |
-| **TikTok** | TikTok for Developers app, OAuth user token | No revenue field — **estimated from Creativity Program payout** (`creativity_rpm`). Day-level series needs Research API; Display API is approximated by bucketing video stats. |
+|---|---|---|
+| **YouTube** | OAuth client + refresh token (or API key) | Analytics & `estimatedRevenue` need the `yt-analytics-monetary.readonly` scope and channel ownership. |
+| **Instagram** | Business/Creator account + Graph API long-lived token | No revenue field — sponsor value is **estimated from reach** (`sponsor_rpm`). |
+| **TikTok** | TikTok for Developers app + OAuth token | No revenue field — **estimated** from Creativity Program payout (`creativity_rpm`). Day-level series needs Research API; Display API is approximated. |
 
-Put values in `config/creators.yaml` or `.env` (see `.env.example`). A platform
-with missing/invalid credentials silently uses synthetic data in `auto` mode.
+Put values in `config/creators.yaml`, `.env`, or Streamlit secrets (see the `*.example` files). Missing creds → that platform falls back to synthetic in `auto` mode.
 
-## Notes on the numbers
+## 🛠️ Tech stack
 
-- **Engagement rate** uses *reach* as the denominator (reach == views on
-  YouTube/TikTok), matching how each platform reports it.
-- **Revenue** is real for YouTube (ad RPM) and *estimated* for Instagram
-  (sponsor value from reach) and TikTok (Creativity payout) — the model and
-  rates are configurable and labelled as estimates in the dashboard footer.
-- Synthetic data is **seeded deterministically** per creator+platform, so demo
-  runs are reproducible.
+**Python** (stdlib-only core pipeline) · **Chart.js** (dashboard) · **Streamlit** (hosting) · **Puppeteer** (`scripts/shoot.mjs`, generates these screenshots).
+
+## 📐 Notes on the numbers
+
+- **Engagement rate** uses *reach* as the denominator (reach == views on YouTube/TikTok), matching how each platform reports it.
+- **Revenue** is real for YouTube (ad RPM) and *estimated* for Instagram & TikTok — the rates are configurable and labelled as estimates in the dashboard footer.
+- Synthetic data is **seeded deterministically** per creator+platform, so demo runs are reproducible.
+
+---
+
+<div align="center">
+<sub>Built as a freelance data-analytics showcase. Synthetic data is for demonstration; swap in real API credentials for live reporting.</sub>
+</div>

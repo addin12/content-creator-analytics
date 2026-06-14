@@ -7,3 +7,6 @@ dist/*.html
 .venv/
 venv/
 .streamlit/secrets.toml
+
+# Node (screenshot tooling)
+node_modules/

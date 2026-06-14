@@ -1,0 +1,10 @@
+# Dark theme to match the embedded dashboard.
+[theme]
+base = "dark"
+primaryColor = "#6ea8fe"
+backgroundColor = "#0e1117"
+secondaryBackgroundColor = "#161b22"
+textColor = "#e6edf3"
+
+[server]
+headless = true

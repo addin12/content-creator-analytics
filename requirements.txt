@@ -1,7 +1,8 @@
 # The synthetic demo (`python run.py --demo`) needs NOTHING here -- it runs on
-# the Python standard library alone. These are only required for live API pulls
-# and the optional config/.env conveniences.
+# the Python standard library alone. These are required for the Streamlit app,
+# live API pulls, and the optional config/.env conveniences.
 
+streamlit>=1.36       # hosted dashboard (streamlit_app.py / Streamlit Cloud)
 requests>=2.31        # Instagram, TikTok, YouTube HTTP calls
 PyYAML>=6.0           # config/creators.yaml
 python-dotenv>=1.0    # load .env automatically

@@ -64,6 +64,29 @@ Self-contained single HTML file (Chart.js from CDN). Four tabs:
 Interactive: toggle platforms, switch the time range (30/90/180/365 days), and
 sort the content table by any column. Everything recomputes client-side.
 
+## Deploy to Streamlit Community Cloud (free)
+
+The repo includes `streamlit_app.py`, which reuses the same pipeline and embeds
+the dashboard, so the hosted app looks identical to the static file.
+
+1. Go to **https://share.streamlit.io** and sign in with GitHub.
+2. **Create app → Deploy a public app from GitHub.**
+3. Repository: `addin12/content-creator-analytics` · Branch: `main` ·
+   Main file: `streamlit_app.py`.
+4. **Deploy.** First build installs `requirements.txt` (a few minutes).
+
+It runs the synthetic demo out of the box. For live data, open
+**Manage app → Settings → Secrets** and paste the filled-in values from
+`.streamlit/secrets.example.toml`, then pick **Live (from secrets)** in the
+sidebar.
+
+Run the hosted app locally too:
+
+```bash
+pip install -r requirements.txt
+streamlit run streamlit_app.py
+```
+
 ## Architecture
 
 ```

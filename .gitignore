@@ -6,3 +6,4 @@ data/processed/*.json
 dist/*.html
 .venv/
 venv/
+.streamlit/secrets.toml

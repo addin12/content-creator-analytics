@@ -1,7 +1,13 @@
 # Creator Analytics Pipeline
 
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://content-creator-analytics.streamlit.app)
+[![Deploy to Streamlit](https://img.shields.io/badge/Deploy%20to-Streamlit-FF4B4B?logo=streamlit&logoColor=white)](https://share.streamlit.io/deploy?repository=addin12%2Fcontent-creator-analytics&branch=main&mainModule=streamlit_app.py)
+
 End-to-end analytics for content creators: **acquire** social data (YouTube,
 Instagram, TikTok) → **normalize** → **aggregate** → **interactive dashboard**.
+
+> **Live demo:** https://content-creator-analytics.streamlit.app
+> _(free-tier apps sleep after inactivity and take ~30s to wake)_
 
 It runs two ways:
 

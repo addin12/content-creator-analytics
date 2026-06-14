@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Creator Analytics Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#0e1117; --panel:#161b22; --panel2:#1c2330; --line:#2a3340;
+    --txt:#e6edf3; --muted:#8b98a8; --accent:#6ea8fe;
+    --yt:#ff4d4f; --ig:#e1306c; --tt:#25f4ee;
+    --good:#3fb950; --bad:#f85149;
+    --radius:14px; --shadow:0 6px 24px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--txt);font-size:14px;line-height:1.45}
+  a{color:var(--accent)}
+  header{padding:22px 28px;border-bottom:1px solid var(--line);
+    display:flex;flex-wrap:wrap;align-items:center;gap:16px;justify-content:space-between;
+    background:linear-gradient(180deg,#11161f,#0e1117)}
+  .brand h1{margin:0;font-size:20px;letter-spacing:.2px}
+  .brand p{margin:3px 0 0;color:var(--muted);font-size:13px}
+  .controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .controls label{color:var(--muted);font-size:12px;margin-right:4px}
+  select,.chip{background:var(--panel2);color:var(--txt);border:1px solid var(--line);
+    border-radius:9px;padding:7px 11px;font-size:13px;cursor:pointer}
+  .chip{user-select:none;transition:.15s}
+  .chip[data-on="0"]{opacity:.35}
+  .chip.yt{border-color:var(--yt)} .chip.ig{border-color:var(--ig)} .chip.tt{border-color:var(--tt)}
+  .wrap{padding:22px 28px;max-width:1320px;margin:0 auto}
+  .tabs{display:flex;gap:6px;margin:4px 0 20px;flex-wrap:wrap}
+  .tab{padding:9px 16px;border-radius:10px;background:var(--panel);border:1px solid var(--line);
+    cursor:pointer;color:var(--muted);font-weight:600;font-size:13px}
+  .tab.active{color:var(--txt);background:var(--panel2);border-color:var(--accent)}
+  .grid{display:grid;gap:16px}
+  .kpis{grid-template-columns:repeat(auto-fit,minmax(190px,1fr));margin-bottom:18px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:16px 18px;box-shadow:var(--shadow)}
+  .card h3{margin:0 0 2px;font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.6px}
+  .kpi-val{font-size:26px;font-weight:700;margin:6px 0 2px}
+  .delta{font-size:12px;font-weight:600}
+  .delta.up{color:var(--good)} .delta.down{color:var(--bad)} .delta.flat{color:var(--muted)}
+  .chart-card{padding:16px 18px}
+  .chart-card .head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+  .chart-card h2{font-size:15px;margin:0}
+  .chart-card .sub{color:var(--muted);font-size:12px}
+  .chart-box{position:relative;height:300px}
+  .chart-box.short{height:240px}
+  .two{grid-template-columns:1fr 1fr}
+  .three{grid-template-columns:1fr 1fr 1fr}
+  @media(max-width:900px){.two,.three{grid-template-columns:1fr}}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--line)}
+  th{color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px;cursor:pointer}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+  tbody tr:hover{background:var(--panel2)}
+  .pill{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600}
+  .pill.youtube{background:rgba(255,77,79,.15);color:#ff8a8c}
+  .pill.instagram{background:rgba(225,48,108,.15);color:#ff7aa8}
+  .pill.tiktok{background:rgba(37,244,238,.13);color:#7af6f1}
+  .hide{display:none}
+  .foot{color:var(--muted);font-size:12px;margin:26px 0 8px;text-align:center}
+  .legend-note{color:var(--muted);font-size:11px;margin-top:8px}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <h1 id="title">Creator Analytics</h1>
+    <p id="subtitle">Loading…</p>
+  </div>
+  <div class="controls">
+    <label>Platforms:</label>
+    <span class="chip yt" data-pf="youtube" data-on="1">YouTube</span>
+    <span class="chip ig" data-pf="instagram" data-on="1">Instagram</span>
+    <span class="chip tt" data-pf="tiktok" data-on="1">TikTok</span>
+    <label style="margin-left:10px">Range:</label>
+    <select id="range">
+      <option value="30">Last 30 days</option>
+      <option value="90">Last 90 days</option>
+      <option value="180">Last 180 days</option>
+      <option value="365" selected>Last 12 months</option>
+    </select>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="tabs" id="tabs">
+    <div class="tab active" data-tab="overview">Cross-platform Overview</div>
+    <div class="tab" data-tab="content">Content Performance</div>
+    <div class="tab" data-tab="audience">Audience Growth</div>
+    <div class="tab" data-tab="money">Monetization</div>
+  </div>
+
+  <div class="grid kpis" id="kpis"></div>
+
+  <!-- OVERVIEW -->
+  <section data-pane="overview">
+    <div class="grid two">
+      <div class="card chart-card">
+        <div class="head"><h2>Views / Reach over time</h2><span class="sub">summed across selected platforms</span></div>
+        <div class="chart-box"><canvas id="cViews"></canvas></div>
+      </div>
+      <div class="card chart-card">
+        <div class="head"><h2>Engagements over time</h2><span class="sub">likes + comments + shares + saves</span></div>
+        <div class="chart-box"><canvas id="cEng"></canvas></div>
+      </div>
+    </div>
+    <div class="grid two" style="margin-top:16px">
+      <div class="card chart-card">
+        <div class="head"><h2>Share of audience</h2><span class="sub">current followers by platform</span></div>
+        <div class="chart-box short"><canvas id="cAudShare"></canvas></div>
+      </div>
+      <div class="card chart-card">
+        <div class="head"><h2>Engagement rate by platform</h2><span class="sub">avg over selected range</span></div>
+        <div class="chart-box short"><canvas id="cErBar"></canvas></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTENT -->
+  <section data-pane="content" class="hide">
+    <div class="grid two">
+      <div class="card chart-card">
+        <div class="head"><h2>Avg engagement rate by format</h2><span class="sub">which formats resonate</span></div>
+        <div class="chart-box"><canvas id="cFmtEr"></canvas></div>
+      </div>
+      <div class="card chart-card">
+        <div class="head"><h2>Best day to post</h2><span class="sub">avg engagement rate by weekday</span></div>
+        <div class="chart-box"><canvas id="cWeekday"></canvas></div>
+      </div>
+    </div>
+    <div class="card chart-card" style="margin-top:16px">
+      <div class="head"><h2>Top performing content</h2><span class="sub" id="topCount"></span></div>
+      <table id="topTable">
+        <thead><tr>
+          <th>Platform</th><th>Published</th><th>Format</th><th>Title</th>
+          <th class="num">Views</th><th class="num">Engagements</th>
+          <th class="num">Eng. rate</th><th class="num">Revenue</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+      <div class="legend-note">Click a column header to sort.</div>
+    </div>
+  </section>
+
+  <!-- AUDIENCE -->
+  <section data-pane="audience" class="hide">
+    <div class="card chart-card">
+      <div class="head"><h2>Follower / subscriber growth</h2><span class="sub">cumulative, by platform</span></div>
+      <div class="chart-box"><canvas id="cFollowers"></canvas></div>
+    </div>
+    <div class="grid two" style="margin-top:16px">
+      <div class="card chart-card">
+        <div class="head"><h2>Net new followers / month</h2><span class="sub">gained minus lost</span></div>
+        <div class="chart-box short"><canvas id="cNetFollowers"></canvas></div>
+      </div>
+      <div class="card chart-card">
+        <div class="head"><h2>Growth summary</h2><span class="sub">selected range</span></div>
+        <div class="chart-box short" style="overflow:auto"><table id="growthTable">
+          <thead><tr><th>Platform</th><th class="num">Start</th><th class="num">Now</th><th class="num">Net add</th><th class="num">Growth</th></tr></thead>
+          <tbody></tbody></table></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MONEY -->
+  <section data-pane="money" class="hide">
+    <div class="grid two">
+      <div class="card chart-card">
+        <div class="head"><h2>Estimated revenue over time</h2><span class="sub">stacked by platform, monthly</span></div>
+        <div class="chart-box"><canvas id="cRevTime"></canvas></div>
+      </div>
+      <div class="card chart-card">
+        <div class="head"><h2>Revenue mix</h2><span class="sub">selected range</span></div>
+        <div class="chart-box short"><canvas id="cRevMix"></canvas></div>
+      </div>
+    </div>
+    <div class="card chart-card" style="margin-top:16px">
+      <div class="head"><h2>Monetization efficiency</h2><span class="sub">revenue per 1,000 views (RPM) &amp; totals</span></div>
+      <table id="moneyTable">
+        <thead><tr><th>Platform</th><th class="num">Revenue (range)</th><th class="num">Views (range)</th><th class="num">Effective RPM</th><th class="num">Rev / follower</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div class="legend-note">RPM = revenue per 1,000 views. YouTube uses ad RPM; Instagram approximates sponsor value from reach; TikTok uses Creativity Program payout.</div>
+    </div>
+  </section>
+
+  <div class="foot" id="foot">Loading…</div>
+</div>
+
+<script>
+/* ============ DATA (injected by the pipeline) ============ */
+const DATA = __DATA_JSON__;
+/* ========================================================= */
+
+const PF = {
+  youtube:{name:"YouTube", color:"#ff4d4f"},
+  instagram:{name:"Instagram", color:"#e1306c"},
+  tiktok:{name:"TikTok", color:"#25f4ee"},
+};
+const fmtInt = n => (n>=1e9?(n/1e9).toFixed(2)+"B":n>=1e6?(n/1e6).toFixed(2)+"M":n>=1e3?(n/1e3).toFixed(1)+"K":Math.round(n).toLocaleString());
+const fmtUsd = n => "$"+(n>=1e6?(n/1e6).toFixed(2)+"M":n>=1e3?(n/1e3).toFixed(1)+"K":n.toFixed(0));
+const fmtPct = n => (n>=0?"+":"")+n.toFixed(1)+"%";
+
+let active = {youtube:true, instagram:true, tiktok:true};
+let rangeDays = 365;
+let charts = {};
+
+Chart.defaults.color = "#8b98a8";
+Chart.defaults.borderColor = "rgba(255,255,255,.05)";
+Chart.defaults.font.family = "-apple-system,Segoe UI,Roboto,sans-serif";
+
+function activePlatforms(){ return Object.keys(active).filter(p=>active[p]); }
+function cutoffDate(){
+  const max = new Date(DATA.profile.end_date);
+  const c = new Date(max); c.setDate(c.getDate()-rangeDays+1); return c;
+}
+function dailyFiltered(){
+  const c = cutoffDate();
+  return DATA.daily.filter(r=>active[r.platform] && new Date(r.date)>=c);
+}
+function uniqueDates(rows){ return [...new Set(rows.map(r=>r.date))].sort(); }
+
+function destroy(id){ if(charts[id]){charts[id].destroy(); delete charts[id];} }
+
+/* ---------- KPI cards ---------- */
+function renderKpis(){
+  const el = document.getElementById("kpis");
+  const aps = activePlatforms();
+  const sum = (k)=> aps.reduce((s,p)=>s+(DATA.kpis[p][k]||0),0);
+  const wavg = ()=>{ let v=0,w=0; aps.forEach(p=>{v+=DATA.kpis[p].eng_rate*DATA.kpis[p].followers; w+=DATA.kpis[p].followers;}); return w? v/w:0; };
+  const cards = [
+    {h:"Total followers", v:fmtInt(sum("followers")), d:avgDelta("followers_chg_pct")},
+    {h:"Views · 30d", v:fmtInt(sum("views_30d")), d:avgDelta("views_chg_pct")},
+    {h:"Engagements · 30d", v:fmtInt(sum("engagements_30d")), d:avgDelta("engagements_chg_pct")},
+    {h:"Avg engagement rate", v:wavg().toFixed(2)+"%", d:null},
+    {h:"Revenue · 30d", v:fmtUsd(sum("revenue_30d")), d:avgDelta("revenue_chg_pct")},
+  ];
+  function avgDelta(k){ if(!aps.length)return 0; return aps.reduce((s,p)=>s+DATA.kpis[p][k],0)/aps.length; }
+  el.innerHTML = cards.map(c=>{
+    let d="";
+    if(c.d!==null){ const cls=c.d>0.5?"up":c.d<-0.5?"down":"flat"; const arr=c.d>0.5?"▲":c.d<-0.5?"▼":"—";
+      d=`<div class="delta ${cls}">${arr} ${fmtPct(c.d)} <span style="color:var(--muted);font-weight:400">vs prior 30d</span></div>`; }
+    return `<div class="card"><h3>${c.h}</h3><div class="kpi-val">${c.v}</div>${d}</div>`;
+  }).join("");
+}
+
+/* ---------- OVERVIEW ---------- */
+function lineByMetric(canvasId, metric, label){
+  destroy(canvasId);
+  const rows = dailyFiltered();
+  const dates = uniqueDates(rows);
+  // weekly smoothing for long ranges
+  const step = rangeDays>120?7:1;
+  const idx = dates.filter((_,i)=>i%step===0);
+  const ds = activePlatforms().map(p=>{
+    const m = {}; rows.filter(r=>r.platform===p).forEach(r=>m[r.date]=r[metric]);
+    return {label:PF[p].name, borderColor:PF[p].color, backgroundColor:PF[p].color+"22",
+      data:idx.map(d=>m[d]||0), tension:.3, pointRadius:0, borderWidth:2, fill:false};
+  });
+  charts[canvasId]=new Chart(document.getElementById(canvasId),{type:"line",
+    data:{labels:idx,datasets:ds},
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:"index",intersect:false},
+      plugins:{legend:{position:"top",labels:{boxWidth:12}},tooltip:{callbacks:{label:c=>c.dataset.label+": "+fmtInt(c.parsed.y)}}},
+      scales:{x:{ticks:{maxTicksLimit:10}},y:{ticks:{callback:v=>fmtInt(v)}}}}});
+}
+function audienceShare(){
+  destroy("cAudShare");
+  const aps=activePlatforms();
+  charts.cAudShare=new Chart(document.getElementById("cAudShare"),{type:"doughnut",
+    data:{labels:aps.map(p=>PF[p].name),datasets:[{data:aps.map(p=>DATA.kpis[p].followers),
+      backgroundColor:aps.map(p=>PF[p].color),borderColor:"#161b22",borderWidth:2}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"right"},
+      tooltip:{callbacks:{label:c=>c.label+": "+fmtInt(c.parsed)}}}}});
+}
+function erBar(){
+  destroy("cErBar");
+  const rows=dailyFiltered(); const aps=activePlatforms();
+  const er=aps.map(p=>{const rr=rows.filter(r=>r.platform===p); return rr.length? rr.reduce((s,r)=>s+r.engagement_rate,0)/rr.length*100:0;});
+  charts.cErBar=new Chart(document.getElementById("cErBar"),{type:"bar",
+    data:{labels:aps.map(p=>PF[p].name),datasets:[{data:er,backgroundColor:aps.map(p=>PF[p].color)}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},
+      tooltip:{callbacks:{label:c=>c.parsed.y.toFixed(2)+"%"}}},scales:{y:{ticks:{callback:v=>v+"%"}}}}});
+}
+
+/* ---------- CONTENT ---------- */
+function fmtEr(){
+  destroy("cFmtEr");
+  const rows=DATA.format_performance.filter(r=>active[r.platform]);
+  charts.cFmtEr=new Chart(document.getElementById("cFmtEr"),{type:"bar",
+    data:{labels:rows.map(r=>PF[r.platform].name+" · "+r.format),
+      datasets:[{label:"Avg eng. rate %",data:rows.map(r=>r.avg_eng_rate*100),
+        backgroundColor:rows.map(r=>PF[r.platform].color)}]},
+    options:{indexAxis:"y",responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},
+      tooltip:{callbacks:{label:c=>c.parsed.x.toFixed(2)+"% · avg "+fmtInt(rows[c.dataIndex].avg_views)+" views"}}},
+      scales:{x:{ticks:{callback:v=>v+"%"}}}}});
+}
+function weekday(){
+  destroy("cWeekday");
+  const order=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+  const rows=DATA.weekday_performance.filter(r=>active[r.platform]);
+  const ds=activePlatforms().map(p=>{
+    const m={}; rows.filter(r=>r.platform===p).forEach(r=>m[r.weekday]=r.avg_eng_rate*100);
+    return {label:PF[p].name,backgroundColor:PF[p].color,data:order.map(d=>m[d]||0)};
+  });
+  charts.cWeekday=new Chart(document.getElementById("cWeekday"),{type:"bar",
+    data:{labels:order.map(d=>d.slice(0,3)),datasets:ds},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"top",labels:{boxWidth:12}},
+      tooltip:{callbacks:{label:c=>c.dataset.label+": "+c.parsed.y.toFixed(2)+"%"}}},
+      scales:{y:{ticks:{callback:v=>v+"%"}}}}});
+}
+let topSort={key:"views",dir:-1};
+function topTable(){
+  const tb=document.querySelector("#topTable tbody");
+  let rows=DATA.top_posts.filter(r=>active[r.platform]).slice();
+  rows.sort((a,b)=>{let x=a[topSort.key],y=b[topSort.key];
+    if(typeof x==="string"){return topSort.dir*x.localeCompare(y);} return topSort.dir*(x-y);});
+  rows=rows.slice(0,15);
+  document.getElementById("topCount").textContent=rows.length+" of "+DATA.top_posts.length+" tracked";
+  tb.innerHTML=rows.map(r=>`<tr>
+    <td><span class="pill ${r.platform}">${PF[r.platform].name}</span></td>
+    <td>${r.published}</td><td>${r.format}</td><td>${r.title}</td>
+    <td class="num">${fmtInt(r.views)}</td><td class="num">${fmtInt(r.engagements)}</td>
+    <td class="num">${(r.engagement_rate*100).toFixed(1)}%</td>
+    <td class="num">${fmtUsd(r.revenue_usd)}</td></tr>`).join("");
+}
+document.querySelectorAll("#topTable th").forEach((th,i)=>{
+  const keys=["platform","published","format","title","views","engagements","engagement_rate","revenue_usd"];
+  th.addEventListener("click",()=>{const k=keys[i]; topSort.dir=(topSort.key===k)?-topSort.dir:-1; topSort.key=k; topTable();});
+});
+
+/* ---------- AUDIENCE ---------- */
+function followers(){
+  destroy("cFollowers");
+  const rows=dailyFiltered(); const dates=uniqueDates(rows);
+  const step=rangeDays>120?7:1; const idx=dates.filter((_,i)=>i%step===0);
+  const ds=activePlatforms().map(p=>{const m={}; rows.filter(r=>r.platform===p).forEach(r=>m[r.date]=r.followers);
+    return {label:PF[p].name,borderColor:PF[p].color,data:idx.map(d=>m[d]||null),tension:.3,pointRadius:0,borderWidth:2,fill:false};});
+  charts.cFollowers=new Chart(document.getElementById("cFollowers"),{type:"line",
+    data:{labels:idx,datasets:ds},options:{responsive:true,maintainAspectRatio:false,
+      interaction:{mode:"index",intersect:false},plugins:{legend:{position:"top",labels:{boxWidth:12}},
+      tooltip:{callbacks:{label:c=>c.dataset.label+": "+fmtInt(c.parsed.y)}}},
+      scales:{x:{ticks:{maxTicksLimit:10}},y:{ticks:{callback:v=>fmtInt(v)}}}}});
+}
+function netFollowers(){
+  destroy("cNetFollowers");
+  const rows=DATA.monthly.filter(r=>active[r.platform]);
+  const months=[...new Set(rows.map(r=>r.month))].sort();
+  const ds=activePlatforms().map(p=>{const m={}; rows.filter(r=>r.platform===p).forEach(r=>m[r.month]=r.net_follower_change);
+    return {label:PF[p].name,backgroundColor:PF[p].color,data:months.map(mo=>m[mo]||0)};});
+  charts.cNetFollowers=new Chart(document.getElementById("cNetFollowers"),{type:"bar",
+    data:{labels:months,datasets:ds},options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:"top",labels:{boxWidth:12}},tooltip:{callbacks:{label:c=>c.dataset.label+": "+fmtInt(c.parsed.y)}}},
+      scales:{x:{stacked:true,ticks:{maxTicksLimit:12}},y:{stacked:true,ticks:{callback:v=>fmtInt(v)}}}}});
+}
+function growthTable(){
+  const tb=document.querySelector("#growthTable tbody");
+  const rows=dailyFiltered();
+  tb.innerHTML=activePlatforms().map(p=>{
+    const rr=rows.filter(r=>r.platform===p).sort((a,b)=>new Date(a.date)-new Date(b.date));
+    if(!rr.length)return"";
+    const start=rr[0].followers, now=rr[rr.length-1].followers, net=now-start;
+    const g=start?(net/start*100):0;
+    const cls=g>0?"up":g<0?"down":"flat";
+    return `<tr><td><span class="pill ${p}">${PF[p].name}</span></td>
+      <td class="num">${fmtInt(start)}</td><td class="num">${fmtInt(now)}</td>
+      <td class="num">${net>=0?"+":""}${fmtInt(net)}</td>
+      <td class="num delta ${cls}">${fmtPct(g)}</td></tr>`;
+  }).join("");
+}
+
+/* ---------- MONEY ---------- */
+function revTime(){
+  destroy("cRevTime");
+  const rows=DATA.monthly.filter(r=>active[r.platform]);
+  const months=[...new Set(rows.map(r=>r.month))].sort();
+  const ds=activePlatforms().map(p=>{const m={}; rows.filter(r=>r.platform===p).forEach(r=>m[r.month]=r.revenue_usd);
+    return {label:PF[p].name,backgroundColor:PF[p].color,data:months.map(mo=>m[mo]||0)};});
+  charts.cRevTime=new Chart(document.getElementById("cRevTime"),{type:"bar",
+    data:{labels:months,datasets:ds},options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:"top",labels:{boxWidth:12}},tooltip:{callbacks:{label:c=>c.dataset.label+": "+fmtUsd(c.parsed.y)}}},
+      scales:{x:{stacked:true,ticks:{maxTicksLimit:12}},y:{stacked:true,ticks:{callback:v=>fmtUsd(v)}}}}});
+}
+function revMix(){
+  destroy("cRevMix");
+  const rows=dailyFiltered(); const aps=activePlatforms();
+  const tot=aps.map(p=>rows.filter(r=>r.platform===p).reduce((s,r)=>s+r.revenue_usd,0));
+  charts.cRevMix=new Chart(document.getElementById("cRevMix"),{type:"doughnut",
+    data:{labels:aps.map(p=>PF[p].name),datasets:[{data:tot,backgroundColor:aps.map(p=>PF[p].color),borderColor:"#161b22",borderWidth:2}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"right"},
+      tooltip:{callbacks:{label:c=>c.label+": "+fmtUsd(c.parsed)}}}}});
+}
+function moneyTable(){
+  const tb=document.querySelector("#moneyTable tbody");
+  const rows=dailyFiltered();
+  tb.innerHTML=activePlatforms().map(p=>{
+    const rr=rows.filter(r=>r.platform===p);
+    const rev=rr.reduce((s,r)=>s+r.revenue_usd,0);
+    const views=rr.reduce((s,r)=>s+r.views,0);
+    const foll=rr.length?rr[rr.length-1].followers:0;
+    const rpm=views?rev/views*1000:0;
+    const rpf=foll?rev/foll:0;
+    return `<tr><td><span class="pill ${p}">${PF[p].name}</span></td>
+      <td class="num">${fmtUsd(rev)}</td><td class="num">${fmtInt(views)}</td>
+      <td class="num">$${rpm.toFixed(2)}</td><td class="num">$${rpf.toFixed(2)}</td></tr>`;
+  }).join("");
+}
+
+/* ---------- render orchestration ---------- */
+function renderAll(){
+  renderKpis();
+  lineByMetric("cViews","views","Views");
+  lineByMetric("cEng","engagements","Engagements");
+  audienceShare(); erBar();
+  fmtEr(); weekday(); topTable();
+  followers(); netFollowers(); growthTable();
+  revTime(); revMix(); moneyTable();
+}
+
+/* ---------- interactions ---------- */
+document.querySelectorAll(".chip").forEach(ch=>ch.addEventListener("click",()=>{
+  const p=ch.dataset.pf; const on=ch.dataset.on==="1";
+  if(on && activePlatforms().length===1)return; // keep at least one
+  ch.dataset.on=on?"0":"1"; active[p]=!on; renderAll();
+}));
+document.getElementById("range").addEventListener("change",e=>{rangeDays=+e.target.value; renderAll();});
+document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>{
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+  t.classList.add("active");
+  const pane=t.dataset.tab;
+  document.querySelectorAll("[data-pane]").forEach(s=>s.classList.toggle("hide",s.dataset.pane!==pane));
+}));
+
+/* ---------- boot ---------- */
+document.getElementById("title").textContent=DATA.profile.creator+" · Creator Analytics";
+document.getElementById("subtitle").textContent=
+  `${DATA.profile.handle} · ${DATA.profile.niche} · data ${DATA.profile.start_date} → ${DATA.profile.end_date}`;
+document.getElementById("foot").textContent=
+  `${DATA.data_quality.daily_rows.toLocaleString()} daily rows · ${DATA.data_quality.post_rows.toLocaleString()} posts · 12-mo revenue ${fmtUsd(DATA.totals.revenue_12mo)} · ${DATA.profile.source_label||"sample data for demonstration"}`;
+renderAll();
+</script>
+</body>
+</html>

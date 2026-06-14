@@ -1,0 +1,38 @@
+# Creator configuration. Copy/edit per client.
+# Credentials can live here OR in environment variables / .env (env wins is NOT
+# the case -- config values take precedence; env is the fallback). Keep real
+# secrets out of version control: prefer .env for tokens.
+
+profile:
+  creator: "Maya Rivera"
+  handle: "@mayacreates"
+  niche: "Tech & lifestyle"
+
+# Which platforms to pull. Remove any you don't manage for this client.
+platforms_enabled:
+  - youtube
+  - instagram
+  - tiktok
+
+# Reporting window. Omit end_date to use "yesterday".
+window_days: 365
+# end_date: "2026-06-14"
+
+platforms:
+  youtube:
+    # channel_id: "UCxxxxxxxxxxxxxxxxxxxxxx"
+    # OAuth (needed for Analytics + revenue):
+    # client_id: ""
+    # client_secret: ""
+    # refresh_token: ""
+    # Or public Data API only:
+    # api_key: ""
+
+  instagram:
+    # user_id: ""            # Instagram Business account id (numeric)
+    # access_token: ""       # long-lived token
+    sponsor_rpm: 9.0         # $ per 1k reach used to estimate sponsor value
+
+  tiktok:
+    # access_token: ""       # OAuth user token (scopes: user.info.stats, video.list)
+    creativity_rpm: 0.55     # $ per 1k qualified views (Creativity Program)

@@ -15,7 +15,13 @@ An end-to-end data pipeline that pulls a creator's social metrics, models them, 
 
 </div>
 
-![Cross-platform overview](docs/img/01-overview.png)
+<div align="center">
+
+![Dashboard demo — switching tabs and toggling platforms](docs/img/demo.gif)
+
+<sub>Switching views and toggling platforms — everything recomputes instantly, client-side.</sub>
+
+</div>
 
 ---
 
@@ -125,7 +131,7 @@ Put values in `config/creators.yaml`, `.env`, or Streamlit secrets (see the `*.e
 
 ## 🛠️ Tech stack
 
-**Python** (stdlib-only core pipeline) · **Chart.js** (dashboard) · **Streamlit** (hosting) · **Puppeteer** (`scripts/shoot.mjs`, generates these screenshots).
+**Python** (stdlib-only core pipeline) · **Chart.js** (dashboard) · **Streamlit** (hosting) · **Puppeteer + pngjs/gifenc** (`scripts/shoot.mjs` & `scripts/record.mjs` generate the screenshots and demo GIF).
 
 ## 📐 Notes on the numbers
 

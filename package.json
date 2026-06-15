@@ -22,6 +22,8 @@
   },
   "homepage": "https://github.com/addin12/content-creator-analytics#readme",
   "dependencies": {
+    "gifenc": "^1.0.3",
+    "pngjs": "^7.0.0",
     "puppeteer-core": "^25.1.0"
   }
 }

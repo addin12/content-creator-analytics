@@ -63,6 +63,26 @@
   .hide{display:none}
   .foot{color:var(--muted);font-size:12px;margin:26px 0 8px;text-align:center}
   .legend-note{color:var(--muted);font-size:11px;margin-top:8px}
+  .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  /* --- mobile / small screens --- */
+  @media(max-width:640px){
+    body{font-size:13px}
+    header{padding:14px 16px;gap:10px}
+    .brand h1{font-size:17px}
+    .controls{width:100%}
+    .wrap{padding:14px 16px}
+    .tabs{margin:2px 0 14px;gap:6px}
+    .tab{padding:8px 12px;font-size:12px;flex:1 1 auto;text-align:center}
+    .kpis{grid-template-columns:1fr 1fr;gap:10px}
+    .card{padding:13px 14px}
+    .kpi-val{font-size:20px}
+    .chart-card .head{flex-direction:column;align-items:flex-start;gap:1px;margin-bottom:8px}
+    .chart-box{height:240px}
+    .chart-box.short{height:220px}
+    th,td{padding:7px 8px}
+    table{font-size:12px;white-space:nowrap}
+  }
+  @media(max-width:360px){ .kpis{grid-template-columns:1fr} }
 </style>
 </head>
 <body>
@@ -134,6 +154,7 @@
     </div>
     <div class="card chart-card" style="margin-top:16px">
       <div class="head"><h2>Top performing content</h2><span class="sub" id="topCount"></span></div>
+      <div class="table-scroll">
       <table id="topTable">
         <thead><tr>
           <th>Platform</th><th>Published</th><th>Format</th><th>Title</th>
@@ -142,6 +163,7 @@
         </tr></thead>
         <tbody></tbody>
       </table>
+      </div>
       <div class="legend-note">Click a column header to sort.</div>
     </div>
   </section>
@@ -180,10 +202,12 @@
     </div>
     <div class="card chart-card" style="margin-top:16px">
       <div class="head"><h2>Monetization efficiency</h2><span class="sub">revenue per 1,000 views (RPM) &amp; totals</span></div>
+      <div class="table-scroll">
       <table id="moneyTable">
         <thead><tr><th>Platform</th><th class="num">Revenue (range)</th><th class="num">Views (range)</th><th class="num">Effective RPM</th><th class="num">Rev / follower</th></tr></thead>
         <tbody></tbody>
       </table>
+      </div>
       <div class="legend-note">RPM = revenue per 1,000 views. YouTube uses ad RPM; Instagram approximates sponsor value from reach; TikTok uses Creativity Program payout.</div>
     </div>
   </section>
@@ -409,6 +433,23 @@ function moneyTable(){
   }).join("");
 }
 
+/* ---------- responsive: auto-size the embedding iframe (e.g. Streamlit) ----
+   When this dashboard is embedded in an iframe (same-origin srcdoc, as
+   Streamlit's components.html uses), grow the iframe to fit content so the
+   host page scrolls naturally on both desktop and mobile. No-ops when opened
+   standalone (window.frameElement is null). */
+function fitFrame(){
+  try{
+    const fe = window.frameElement;
+    if(!fe) return;
+    const h = Math.ceil(document.documentElement.getBoundingClientRect().height) + 8;
+    fe.style.height = h + "px";
+    fe.setAttribute("height", h);
+    let el = fe.parentElement, n = 0;            // clear fixed heights Streamlit sets
+    while(el && n++ < 5){ el.style.height = "auto"; el.style.maxHeight = "none"; el = el.parentElement; }
+  }catch(e){/* cross-origin sandbox: rely on iframe scrolling fallback */}
+}
+
 /* ---------- render orchestration ---------- */
 function renderAll(){
   renderKpis();
@@ -418,6 +459,7 @@ function renderAll(){
   fmtEr(); weekday(); topTable();
   followers(); netFollowers(); growthTable();
   revTime(); revMix(); moneyTable();
+  fitFrame();
 }
 
 /* ---------- interactions ---------- */
@@ -444,6 +486,11 @@ document.getElementById("subtitle").textContent=
 document.getElementById("foot").textContent=
   `${DATA.data_quality.daily_rows.toLocaleString()} daily rows · ${DATA.data_quality.post_rows.toLocaleString()} posts · 12-mo revenue ${fmtUsd(DATA.totals.revenue_12mo)} · ${DATA.profile.source_label||"sample data for demonstration"}`;
 renderAll();
+
+/* keep the embedding iframe sized to content as layout/charts settle */
+window.addEventListener("resize", fitFrame);
+if (window.ResizeObserver) new ResizeObserver(fitFrame).observe(document.body);
+[150,500,1200].forEach(t=>setTimeout(fitFrame,t));
 </script>
 </body>
 </html>

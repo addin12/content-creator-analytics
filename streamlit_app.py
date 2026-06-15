@@ -38,6 +38,18 @@ PLATFORMS = ["youtube", "instagram", "tiktok"]
 
 st.set_page_config(page_title="Creator Analytics", page_icon="📊", layout="wide")
 
+# Trim Streamlit's default chrome so the embedded dashboard gets full width
+# (matters most on mobile, where padding eats the screen).
+st.markdown(
+    """
+    <style>
+      .block-container{padding:1.2rem 0.6rem 0;max-width:100%;}
+      iframe{width:100% !important;}
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
 
 def _load_secrets_into_env() -> None:
     """Mirror Streamlit secrets into env vars so the live connectors find them."""
@@ -83,7 +95,10 @@ def render(data: dict) -> None:
     template = TEMPLATE.read_text(encoding="utf-8")
     payload = json.dumps(data, ensure_ascii=False, separators=(",", ":"))
     html = template.replace(PLACEHOLDER, payload)
-    components.html(html, height=2400, scrolling=True)
+    # The dashboard auto-grows its own iframe to fit content (responsive on
+    # desktop & mobile). `height` is just the initial size; `scrolling` is a
+    # fallback if the host sandbox blocks the auto-resize.
+    components.html(html, height=900, scrolling=True)
 
 
 # ----------------------------------------------------------------- sidebar UI

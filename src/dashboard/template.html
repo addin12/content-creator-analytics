@@ -23,10 +23,10 @@
   .brand h1{margin:0;font-size:20px;letter-spacing:.2px}
   .brand p{margin:3px 0 0;color:var(--muted);font-size:13px}
   .controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-  .controls label{color:var(--muted);font-size:12px;margin-right:4px}
+  .controls label,.controls .ctl-label{color:var(--muted);font-size:12px;margin-right:4px}
   select,.chip{background:var(--panel2);color:var(--txt);border:1px solid var(--line);
     border-radius:9px;padding:7px 11px;font-size:13px;cursor:pointer}
-  .chip{user-select:none;transition:.15s}
+  .chip{-webkit-user-select:none;user-select:none;transition:.15s}
   .chip[data-on="0"]{opacity:.35}
   .chip.yt{border-color:var(--yt)} .chip.ig{border-color:var(--ig)} .chip.tt{border-color:var(--tt)}
   .wrap{padding:22px 28px;max-width:1320px;margin:0 auto}
@@ -63,7 +63,11 @@
   .hide{display:none}
   .foot{color:var(--muted);font-size:12px;margin:26px 0 8px;text-align:center}
   .legend-note{color:var(--muted);font-size:11px;margin-top:8px}
-  .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .table-scroll{overflow-x:auto}
+  /* small layout utilities (avoid inline styles) */
+  .ml10{margin-left:10px} .mt16{margin-top:16px} .mb16{margin-bottom:16px}
+  .ovauto{overflow:auto} .dim{color:var(--muted);font-weight:400}
+  .langbtn{margin-left:10px;font-weight:600}
   .insights-grid{grid-template-columns:1fr 1fr}
   .insight{background:var(--panel2);border:1px solid var(--line);border-radius:11px;
     padding:13px 15px;display:flex;gap:11px;align-items:flex-start;border-left-width:3px}
@@ -103,19 +107,19 @@
     <p id="subtitle">Loading…</p>
   </div>
   <div class="controls">
-    <label data-i18n="hdr_platforms">Platforms:</label>
+    <span class="ctl-label" data-i18n="hdr_platforms">Platforms:</span>
     <span class="chip yt" data-pf="youtube" data-on="1">YouTube</span>
     <span class="chip ig" data-pf="instagram" data-on="1">Instagram</span>
     <span class="chip tt" data-pf="tiktok" data-on="1">TikTok</span>
-    <label style="margin-left:10px" data-i18n="hdr_range">Range:</label>
-    <select id="range">
+    <span class="ctl-label ml10" data-i18n="hdr_range">Range:</span>
+    <select id="range" aria-label="Range / Periode" title="Range / Periode">
       <option value="mtd" selected data-i18n="range_mtd">Month to date</option>
       <option value="30" data-i18n="range_30">Last 30 days</option>
       <option value="90" data-i18n="range_90">Last 90 days</option>
       <option value="180" data-i18n="range_180">Last 180 days</option>
       <option value="365" data-i18n="range_365">Last 12 months</option>
     </select>
-    <span class="chip" id="langBtn" title="Language / Bahasa" style="margin-left:10px;font-weight:600">EN</span>
+    <span class="chip langbtn" id="langBtn" title="Language / Bahasa">EN</span>
   </div>
 </header>
 
@@ -132,14 +136,14 @@
 
   <!-- INSIGHTS -->
   <section data-pane="insights">
-    <div class="card chart-card" style="margin-bottom:16px">
+    <div class="card chart-card mb16">
       <div class="head"><h2 data-i18n="ins_title">What to do next</h2><span class="sub" data-i18n="ins_sub">auto-generated from your last 30 days &amp; trends</span></div>
       <div class="grid insights-grid" id="insightCards"></div>
     </div>
     <div class="card chart-card">
       <div class="head">
         <h2 data-i18n="fc_title">Forecast — next 3 months</h2>
-        <select id="fcMetric" title="Forecast metric">
+        <select id="fcMetric" title="Forecast metric" aria-label="Forecast metric">
           <option value="followers" selected data-i18n="fc_followers">Followers</option>
           <option value="views" data-i18n="fc_views">Views / month</option>
           <option value="revenue_usd" data-i18n="fc_revenue">Revenue / month</option>
@@ -162,7 +166,7 @@
         <div class="chart-box"><canvas id="cEng"></canvas></div>
       </div>
     </div>
-    <div class="grid two" style="margin-top:16px">
+    <div class="grid two mt16">
       <div class="card chart-card">
         <div class="head"><h2 data-i18n="ov_share_t">Share of audience</h2><span class="sub" data-i18n="ov_share_s">current followers by platform</span></div>
         <div class="chart-box short"><canvas id="cAudShare"></canvas></div>
@@ -186,7 +190,7 @@
         <div class="chart-box"><canvas id="cWeekday"></canvas></div>
       </div>
     </div>
-    <div class="grid two" style="margin-top:16px">
+    <div class="grid two mt16">
       <div class="card chart-card">
         <div class="head"><h2 data-i18n="ct_topics_t">Top content topics</h2><span class="sub" data-i18n="ct_topics_s">avg views per post, by topic</span></div>
         <div class="chart-box"><canvas id="cThemes"></canvas></div>
@@ -202,7 +206,7 @@
         <div class="legend-note" data-i18n="ct_kw_note">Lean into topics with high avg views &amp; top-10 hits; rework the rest.</div>
       </div>
     </div>
-    <div class="card chart-card" style="margin-top:16px">
+    <div class="card chart-card mt16">
       <div class="head"><h2 data-i18n="ct_top_t">Top performing content</h2><span class="sub" id="topCount"></span></div>
       <div class="table-scroll">
       <table id="topTable">
@@ -224,14 +228,14 @@
       <div class="head"><h2 data-i18n="aud_foll_t">Follower / subscriber growth</h2><span class="sub" data-i18n="aud_foll_s">cumulative, by platform</span></div>
       <div class="chart-box"><canvas id="cFollowers"></canvas></div>
     </div>
-    <div class="grid two" style="margin-top:16px">
+    <div class="grid two mt16">
       <div class="card chart-card">
         <div class="head"><h2 data-i18n="aud_net_t">Net new followers / month</h2><span class="sub" data-i18n="aud_net_s">gained minus lost</span></div>
         <div class="chart-box short"><canvas id="cNetFollowers"></canvas></div>
       </div>
       <div class="card chart-card">
         <div class="head"><h2 data-i18n="aud_growth_t">Growth summary</h2><span class="sub" data-i18n="aud_growth_s">selected range</span></div>
-        <div class="chart-box short" style="overflow:auto"><table id="growthTable">
+        <div class="chart-box short ovauto"><table id="growthTable">
           <thead><tr><th data-i18n="gr_h_platform">Platform</th><th class="num" data-i18n="gr_h_start">Start</th><th class="num" data-i18n="gr_h_now">Now</th><th class="num" data-i18n="gr_h_netadd">Net add</th><th class="num" data-i18n="gr_h_growth">Growth</th></tr></thead>
           <tbody></tbody></table></div>
       </div>
@@ -250,7 +254,7 @@
         <div class="chart-box short"><canvas id="cRevMix"></canvas></div>
       </div>
     </div>
-    <div class="card chart-card" style="margin-top:16px">
+    <div class="card chart-card mt16">
       <div class="head"><h2 data-i18n="mn_eff_t">Monetization efficiency</h2><span class="sub" data-i18n="mn_eff_s">revenue per 1,000 views (RPM) &amp; totals</span></div>
       <div class="table-scroll">
       <table id="moneyTable">
@@ -423,7 +427,7 @@ function renderKpis(){
   el.innerHTML = cards.map(c=>{
     let d="";
     if(c.d!==null){ const cls=c.d>0.5?"up":c.d<-0.5?"down":"flat"; const arr=c.d>0.5?"▲":c.d<-0.5?"▼":"—";
-      d=`<div class="delta ${cls}">${arr} ${fmtPct(c.d)} <span style="color:var(--muted);font-weight:400">${t("kpi_vsprior")}</span></div>`; }
+      d=`<div class="delta ${cls}">${arr} ${fmtPct(c.d)} <span class="dim">${t("kpi_vsprior")}</span></div>`; }
     return `<div class="card"><h3>${c.h}</h3><div class="kpi-val">${c.v}</div>${d}</div>`;
   }).join("");
 }

@@ -10,10 +10,11 @@ const file = pathToFileURL(path.resolve("dist/dashboard.html")).href;
 const outDir = "docs/img";
 
 const tabs = [
-  ["overview", "01-overview.png"],
-  ["content", "02-content.png"],
-  ["audience", "03-audience.png"],
-  ["money", "04-monetization.png"],
+  ["insights", "01-insights.png"],
+  ["overview", "02-overview.png"],
+  ["content", "03-content.png"],
+  ["audience", "04-audience.png"],
+  ["money", "05-monetization.png"],
 ];
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -30,8 +31,8 @@ await page.setViewport({ width: 1440, height: 1900, deviceScaleFactor: 2 });
 // flow. Avoids state accumulated by clicking through tabs in one session.
 for (const [tab, name] of tabs) {
   await page.goto(file, { waitUntil: "networkidle0", timeout: 60000 });
-  await sleep(2500); // let the default (overview) charts settle
-  if (tab !== "overview") {
+  await sleep(2500); // let the default (insights) charts settle
+  if (tab !== "insights") {
     await page.click(`.tab[data-tab="${tab}"]`); // handler re-renders the pane
     await sleep(2500);
   }

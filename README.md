@@ -35,31 +35,37 @@ Creators live across three platforms that each report numbers differently — di
 
 ## ✨ Features
 
+- **💡 Prescriptive, not just descriptive** — an **Insights** tab tells the creator *what to do next*: auto-generated, numbers-backed takeaways (growth engine, best/worst topic, best day to post, where the money is) — because creators care more about their next move than raw charts.
+- **🔮 3-month forecast** — followers / views / revenue projected from the recent trend (linear regression on complete months), shown as actual-vs-projected.
+- **🔎 Topic & keyword analysis** — which content topics land in your top 10, their avg views & engagement, so you know what to make more of.
 - **🔌 Three platforms, one schema** — YouTube, Instagram & TikTok normalized into a single canonical model.
 - **🧪 Runs with zero setup** — a built-in synthetic generator produces a full, realistic year of data using only the Python standard library. `python run.py --demo` → instant dashboard.
 - **🔑 Live-ready** — real API connectors (YouTube Data + Analytics, Instagram Graph, TikTok) activate automatically when you add credentials; anything not connected stays synthetic, so it never half-breaks.
-- **📈 Four analytical views** — cross-platform overview, content performance, audience growth, and monetization.
-- **🎛️ Fully interactive** — toggle platforms, switch the time range (30 / 90 / 180 / 365 days), and sort the content table — everything recomputes client-side.
+- **🎛️ Fully interactive** — toggle platforms, switch the time range (**month-to-date** default, plus 30 / 90 / 180 / 365 days), sort the content table — everything recomputes client-side. Responsive on desktop & mobile.
 - **💸 Honest monetization model** — real ad RPM for YouTube; transparent, configurable *estimates* for Instagram (sponsor value from reach) and TikTok (Creativity Program payout).
 - **☁️ One-click deploy** to Streamlit Community Cloud (free).
 
 ## 🖼️ Screenshots
 
+### 💡 Insights — what to do next
+Auto-generated takeaways with real numbers (do more / fix this / where the money is) plus a 3-month forecast. This is the default view.
+![Insights](docs/img/01-insights.png)
+
 ### Cross-platform Overview
 Headline KPIs with 30-day deltas, views & engagement trends, audience split, and engagement rate by platform.
-![Overview](docs/img/01-overview.png)
+![Overview](docs/img/02-overview.png)
 
 ### Content Performance
-What formats resonate, the best day of the week to post, and a sortable table of top-performing content.
-![Content performance](docs/img/02-content.png)
+What formats resonate, the best day to post, **top content topics & the keywords in your top 10**, and a sortable table of top-performing content.
+![Content performance](docs/img/03-content.png)
 
 ### Audience Growth
 Cumulative follower growth, net new followers per month, and a per-platform growth summary.
-![Audience growth](docs/img/03-audience.png)
+![Audience growth](docs/img/04-audience.png)
 
 ### Monetization
 Estimated revenue over time, revenue mix, and efficiency (effective RPM & revenue per follower).
-![Monetization](docs/img/04-monetization.png)
+![Monetization](docs/img/05-monetization.png)
 
 ## 🚀 Quick start
 
@@ -113,7 +119,7 @@ For live data, add tokens under **Settings → Secrets** (see `.streamlit/secret
 |---|---|---|
 | **Acquire** | `src/ingest/` | Per-platform connectors. `synthetic.py` (zero-cred) + `youtube.py` / `instagram.py` / `tiktok.py` (live). A mode-aware resolver picks live-or-synthetic per platform. |
 | **Normalize** | `src/transform/` | Raw → canonical records; derives engagements, engagement rate, net follower change. |
-| **Aggregate** | `src/analytics/` | Canonical → the dashboard `DATA` object: KPIs (30d vs prior-30d), monthly rollups, format & weekday performance, top posts. |
+| **Aggregate** | `src/analytics/` | Canonical → the dashboard `DATA` object: KPIs (30d vs prior-30d), monthly rollups, format / weekday / **topic** performance, top posts, **3-month forecast**, and the rules-based **insights**. |
 | **Render** | `src/dashboard/` | Injects `DATA` into a self-contained Chart.js template → standalone HTML. |
 | **Serve** | `streamlit_app.py` | Reuses the exact pipeline and embeds the dashboard for hosting. |
 

@@ -52,6 +52,20 @@ TITLES = [
     "Morning routine", "Q&A with you", "Day in the life", "Unboxing",
 ]
 
+# Per-topic performance signal: (views multiplier, engagement multiplier).
+# Gives some topics a consistent edge so theme/keyword insights are meaningful
+# rather than noise. Topics not listed default to (1.0, 1.0).
+THEME_WEIGHT = {
+    "Tier list": (1.55, 1.20), "Honest gadget review": (1.45, 1.15),
+    "Budget vs premium": (1.40, 1.18), "Trying a viral trend": (1.35, 1.22),
+    "Tutorial": (1.20, 0.95), "Reacting to comments": (1.10, 1.10),
+    "Productivity setup": (1.05, 1.00), "How I edit": (1.00, 1.00),
+    "What I bought": (0.95, 1.05), "Q&A with you": (0.90, 1.08),
+    "Mistakes I made": (0.85, 1.05), "Behind the scenes": (0.80, 1.00),
+    "Morning routine": (0.70, 0.95), "Unboxing": (0.65, 0.92),
+    "Day in the life": (0.60, 0.90),
+}
+
 # Posts published per platform over the 12-month window.
 POST_COUNT = {"youtube": 147, "instagram": 272, "tiktok": 333}
 
@@ -141,11 +155,13 @@ class SyntheticConnector(Connector):
             pub = start + timedelta(days=day_off)
             growth = (1 + p["monthly_growth"]) ** (day_off / 30.0)
             fmt = rng.choices(fmt_names, weights=fmt_weights)[0]
+            title = rng.choice(TITLES)
+            tw_views, tw_eng = THEME_WEIGHT.get(title, (1.0, 1.0))
 
-            base = p["base_views"] * growth * fmt_boost[fmt]
-            views = int(base * math.exp(rng.gauss(0, 0.7)))
+            base = p["base_views"] * growth * fmt_boost[fmt] * tw_views
+            views = int(base * math.exp(rng.gauss(0, 0.6)))
             eng_lo, eng_hi = p["eng_rate"]
-            er = rng.uniform(eng_lo, eng_hi) * WEEKDAY_ENG[pub.weekday()]
+            er = rng.uniform(eng_lo, eng_hi) * WEEKDAY_ENG[pub.weekday()] * tw_eng
             engagements = int(views * er)
             likes = int(engagements * rng.uniform(0.78, 0.88))
             comments = int(engagements * rng.uniform(0.02, 0.05))
@@ -161,7 +177,7 @@ class SyntheticConnector(Connector):
             rows.append({
                 "post_id": f"{prefix}{k:04d}", "platform": self.platform,
                 "published": pub.isoformat(), "format": fmt,
-                "title": rng.choice(TITLES), "views": views, "likes": likes,
+                "title": title, "views": views, "likes": likes,
                 "comments": comments, "shares": shares, "saves": saves,
                 "revenue_usd": revenue,
             })

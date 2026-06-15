@@ -48,11 +48,12 @@ async function chip(pf, delay = 1300) {
 }
 
 // --- storyboard ---
-await grab(1400);            // overview
+await grab(1600);            // insights (default tab)
+await tab("overview");       // cross-platform overview
 await tab("content");        // content performance
 await tab("audience");       // audience growth
 await tab("money");          // monetization
-await tab("overview", 1200); // back to overview
+await tab("insights", 1200); // back to insights
 await chip("tiktok");        // drop TikTok
 await chip("instagram");     // drop Instagram -> YouTube only
 await chip("instagram");     // bring Instagram back

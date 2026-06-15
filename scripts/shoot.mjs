@@ -32,6 +32,8 @@ await page.setViewport({ width: 1440, height: 1900, deviceScaleFactor: 2 });
 for (const [tab, name] of tabs) {
   await page.goto(file, { waitUntil: "networkidle0", timeout: 60000 });
   await sleep(2500); // let the default (insights) charts settle
+  await page.click("#langBtn"); // README is English -> switch ID->EN for shots
+  await sleep(1000);
   if (tab !== "insights") {
     await page.click(`.tab[data-tab="${tab}"]`); // handler re-renders the pane
     await sleep(2500);

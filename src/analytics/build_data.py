@@ -290,51 +290,69 @@ def build_data(daily: list[dict], posts: list[dict], profile: dict) -> dict:
     }
 
 
+WEEKDAY_ID = {"Monday": "Senin", "Tuesday": "Selasa", "Wednesday": "Rabu",
+              "Thursday": "Kamis", "Friday": "Jumat", "Saturday": "Sabtu",
+              "Sunday": "Minggu"}
+
+
 def build_insights(kpis, totals, platforms, top_keywords, format_performance,
                    weekday_performance, forecast, monthly) -> list[dict]:
-    """Rules-based, numbers-backed takeaways. kind: win | watch | tip | forecast."""
+    """Rules-based, numbers-backed takeaways in EN + ID. kind: win|watch|tip|forecast."""
     out = []
     name = lambda p: PF_NAME.get(p, p.title())
 
-    # 1) growth engine — most net new followers in 30d
+    def add(kind, title, text, title_id, text_id):
+        out.append({"kind": kind, "title": title, "text": text,
+                    "title_id": title_id, "text_id": text_id})
+
+    # 1) growth engine
     if platforms:
         g = max(platforms, key=lambda p: kpis[p]["net_followers_30d"])
-        k = kpis[g]
-        out.append({"kind": "win", "title": "Growth engine",
-                    "text": f"{name(g)} added {_fmt_int(k['net_followers_30d'])} followers in the "
-                            f"last 30 days — your fastest grower. Keep feeding it."})
+        n = _fmt_int(kpis[g]["net_followers_30d"])
+        add("win", "Growth engine",
+            f"{name(g)} added {n} followers in the last 30 days — your fastest grower. Keep feeding it.",
+            "Mesin pertumbuhan",
+            f"{name(g)} menambah {n} pengikut dalam 30 hari terakhir — pertumbuhan tercepatmu. Terus dorong.")
 
-    # 2) decelerating growth — biggest negative follower momentum
+    # 2) decelerating growth
     dec = [p for p in platforms if kpis[p]["followers_chg_pct"] < -5]
     if dec:
         w = min(dec, key=lambda p: kpis[p]["followers_chg_pct"])
-        out.append({"kind": "watch", "title": "Losing momentum",
-                    "text": f"{name(w)} follower growth slowed {_fmt_pct(kpis[w]['followers_chg_pct'])} "
-                            f"vs the prior 30 days. Revisit what worked there earlier and post more often."})
+        pct = _fmt_pct(kpis[w]["followers_chg_pct"])
+        add("watch", "Losing momentum",
+            f"{name(w)} follower growth slowed {pct} vs the prior 30 days. Revisit what worked there earlier and post more often.",
+            "Momentum menurun",
+            f"Pertumbuhan pengikut {name(w)} melambat {pct} vs 30 hari sebelumnya. Tinjau lagi yang dulu berhasil dan posting lebih sering.")
 
-    # 3) best engagement platform -> repurpose
+    # 3) best engagement platform
     if len(platforms) > 1:
         e = max(platforms, key=lambda p: kpis[p]["eng_rate"])
-        out.append({"kind": "tip", "title": "Repurpose to your strongest format",
-                    "text": f"{name(e)} engages best ({kpis[e]['eng_rate']:.1f}% avg). Repurpose your "
-                            f"top ideas from other platforms into {name(e)} first."})
+        er = f"{kpis[e]['eng_rate']:.1f}%"
+        add("tip", "Repurpose to your strongest format",
+            f"{name(e)} engages best ({er} avg). Repurpose your top ideas from other platforms into {name(e)} first.",
+            "Manfaatkan format terkuatmu",
+            f"{name(e)} paling tinggi interaksinya ({er} rata-rata). Olah ulang ide terbaikmu dari platform lain ke {name(e)} dulu.")
 
-    # 4) best content theme (>=3 posts) -> do more
+    # 4) best / worst content topic
     elig = [t for t in top_keywords if t["posts"] >= 3]
     if elig:
         best = max(elig, key=lambda t: t["avg_views"])
-        out.append({"kind": "win", "title": "Your best topic",
-                    "text": f"“{best['theme']}” averages {_fmt_int(best['avg_views'])} views and "
-                            f"{best['avg_eng_rate']*100:.1f}% engagement — your strongest topic"
-                            + (f" ({best['in_top10']} in your top 10)." if best['in_top10'] else ".")
-                            + " Make more of it."})
+        bv, ber = _fmt_int(best["avg_views"]), f"{best['avg_eng_rate']*100:.1f}%"
+        en_top = f" ({best['in_top10']} in your top 10)." if best["in_top10"] else "."
+        id_top = f" ({best['in_top10']} di 10 besar)." if best["in_top10"] else "."
+        add("win", "Your best topic",
+            f"“{best['theme']}” averages {bv} views and {ber} engagement — your strongest topic{en_top} Make more of it.",
+            "Topik terbaikmu",
+            f"“{best['theme']}” rata-rata {bv} views dan {ber} interaksi — topik terkuatmu{id_top} Perbanyak.")
         worst = min(elig, key=lambda t: t["avg_views"])
         if worst["theme"] != best["theme"]:
-            out.append({"kind": "watch", "title": "Underperforming topic",
-                        "text": f"“{worst['theme']}” averages only {_fmt_int(worst['avg_views'])} views. "
-                                f"Rework the hook/format or post it less."})
+            wv = _fmt_int(worst["avg_views"])
+            add("watch", "Underperforming topic",
+                f"“{worst['theme']}” averages only {wv} views. Rework the hook/format or post it less.",
+                "Topik kurang perform",
+                f"“{worst['theme']}” rata-rata hanya {wv} views. Perbaiki hook/format atau kurangi.")
 
-    # 5) best day to post (across platforms, weighted by posts)
+    # 5) best day to post
     wd = defaultdict(lambda: [0.0, 0])
     for r in weekday_performance:
         wd[r["weekday"]][0] += r["avg_eng_rate"] * r["posts"]
@@ -342,28 +360,33 @@ def build_insights(kpis, totals, platforms, top_keywords, format_performance,
     wd_avg = {k: v[0] / v[1] for k, v in wd.items() if v[1]}
     if wd_avg:
         bestday = max(wd_avg, key=wd_avg.get)
-        out.append({"kind": "tip", "title": "Best day to post",
-                    "text": f"{bestday} posts engage best ({wd_avg[bestday]*100:.1f}% avg). "
-                            f"Schedule your most important content then."})
+        er = f"{wd_avg[bestday]*100:.1f}%"
+        add("tip", "Best day to post",
+            f"{bestday} posts engage best ({er} avg). Schedule your most important content then.",
+            "Hari terbaik untuk posting",
+            f"Posting hari {WEEKDAY_ID.get(bestday, bestday)} paling tinggi interaksinya ({er} rata-rata). Jadwalkan konten terpentingmu saat itu.")
 
-    # 6) monetization — best earner + RPM context
+    # 6) monetization
     if platforms:
         m = max(platforms, key=lambda p: kpis[p]["revenue_30d"])
-        out.append({"kind": "tip", "title": "Where the money is",
-                    "text": f"{name(m)} earned {('$'+_fmt_int(kpis[m]['revenue_30d']))} in 30 days "
-                            f"(${kpis[m]['rpm']:.2f} per 1K views). Lean into its monetization while "
-                            f"growing the others."})
+        rev = "$" + _fmt_int(kpis[m]["revenue_30d"])
+        rpm = f"${kpis[m]['rpm']:.2f}"
+        add("tip", "Where the money is",
+            f"{name(m)} earned {rev} in 30 days ({rpm} per 1K views). Lean into its monetization while growing the others.",
+            "Sumber pendapatan",
+            f"{name(m)} menghasilkan {rev} dalam 30 hari ({rpm} per 1K views). Maksimalkan monetisasinya sambil menumbuhkan yang lain.")
 
-    # 7) forecast headline — projected total followers at the 3rd month
+    # 7) forecast headline
     fl = forecast.get("labels") or []
     if fl and forecast.get("platforms"):
         now = sum(kpis[p]["followers"] for p in platforms)
         proj = sum(forecast["platforms"][p]["followers"][-1] for p in platforms
                    if p in forecast["platforms"])
         if proj > 0:
-            chg = _pct_change(proj, now)
-            out.append({"kind": "forecast", "title": "Projection",
-                        "text": f"On current trend you’re on track for ~{_fmt_int(proj)} total "
-                                f"followers by {fl[-1]} ({_fmt_pct(chg)} vs today)."})
+            x, pct = _fmt_int(proj), _fmt_pct(_pct_change(proj, now))
+            add("forecast", "Projection",
+                f"On current trend you’re on track for ~{x} total followers by {fl[-1]} ({pct} vs today).",
+                "Proyeksi",
+                f"Dengan tren saat ini, kamu menuju ~{x} total pengikut pada {fl[-1]} ({pct} vs hari ini).")
 
     return out

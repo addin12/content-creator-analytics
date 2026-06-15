@@ -27,6 +27,8 @@ const page = await browser.newPage();
 await page.setViewport({ width: W, height: H, deviceScaleFactor: 1 });
 await page.goto(file, { waitUntil: "networkidle0", timeout: 60000 });
 await sleep(2500);
+await page.click("#langBtn"); // README is English -> capture the GIF in EN
+await sleep(1200);
 
 const frames = [];
 async function grab(delay) {

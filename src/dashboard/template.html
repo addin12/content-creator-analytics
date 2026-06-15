@@ -103,28 +103,29 @@
     <p id="subtitle">Loading…</p>
   </div>
   <div class="controls">
-    <label>Platforms:</label>
+    <label data-i18n="hdr_platforms">Platforms:</label>
     <span class="chip yt" data-pf="youtube" data-on="1">YouTube</span>
     <span class="chip ig" data-pf="instagram" data-on="1">Instagram</span>
     <span class="chip tt" data-pf="tiktok" data-on="1">TikTok</span>
-    <label style="margin-left:10px">Range:</label>
+    <label style="margin-left:10px" data-i18n="hdr_range">Range:</label>
     <select id="range">
-      <option value="mtd" selected>Month to date</option>
-      <option value="30">Last 30 days</option>
-      <option value="90">Last 90 days</option>
-      <option value="180">Last 180 days</option>
-      <option value="365">Last 12 months</option>
+      <option value="mtd" selected data-i18n="range_mtd">Month to date</option>
+      <option value="30" data-i18n="range_30">Last 30 days</option>
+      <option value="90" data-i18n="range_90">Last 90 days</option>
+      <option value="180" data-i18n="range_180">Last 180 days</option>
+      <option value="365" data-i18n="range_365">Last 12 months</option>
     </select>
+    <span class="chip" id="langBtn" title="Language / Bahasa" style="margin-left:10px;font-weight:600">EN</span>
   </div>
 </header>
 
 <div class="wrap">
   <div class="tabs" id="tabs">
-    <div class="tab active" data-tab="insights">💡 Insights</div>
-    <div class="tab" data-tab="overview">Cross-platform Overview</div>
-    <div class="tab" data-tab="content">Content Performance</div>
-    <div class="tab" data-tab="audience">Audience Growth</div>
-    <div class="tab" data-tab="money">Monetization</div>
+    <div class="tab active" data-tab="insights" data-i18n="tab_insights">💡 Insights</div>
+    <div class="tab" data-tab="overview" data-i18n="tab_overview">Cross-platform Overview</div>
+    <div class="tab" data-tab="content" data-i18n="tab_content">Content Performance</div>
+    <div class="tab" data-tab="audience" data-i18n="tab_audience">Audience Growth</div>
+    <div class="tab" data-tab="money" data-i18n="tab_money">Monetization</div>
   </div>
 
   <div class="grid kpis" id="kpis"></div>
@@ -132,20 +133,20 @@
   <!-- INSIGHTS -->
   <section data-pane="insights">
     <div class="card chart-card" style="margin-bottom:16px">
-      <div class="head"><h2>What to do next</h2><span class="sub">auto-generated from your last 30 days &amp; trends</span></div>
+      <div class="head"><h2 data-i18n="ins_title">What to do next</h2><span class="sub" data-i18n="ins_sub">auto-generated from your last 30 days &amp; trends</span></div>
       <div class="grid insights-grid" id="insightCards"></div>
     </div>
     <div class="card chart-card">
       <div class="head">
-        <h2>Forecast — next 3 months</h2>
+        <h2 data-i18n="fc_title">Forecast — next 3 months</h2>
         <select id="fcMetric" title="Forecast metric">
-          <option value="followers" selected>Followers</option>
-          <option value="views">Views / month</option>
-          <option value="revenue_usd">Revenue / month</option>
+          <option value="followers" selected data-i18n="fc_followers">Followers</option>
+          <option value="views" data-i18n="fc_views">Views / month</option>
+          <option value="revenue_usd" data-i18n="fc_revenue">Revenue / month</option>
         </select>
       </div>
       <div class="chart-box"><canvas id="cForecast"></canvas></div>
-      <div class="legend-note">Dashed = projection (linear trend on recent complete months, summed across selected platforms). An estimate, not a guarantee.</div>
+      <div class="legend-note" data-i18n="fc_note">Dashed = projection (linear trend on recent complete months, summed across selected platforms). An estimate, not a guarantee.</div>
     </div>
   </section>
 
@@ -153,21 +154,21 @@
   <section data-pane="overview" class="hide">
     <div class="grid two">
       <div class="card chart-card">
-        <div class="head"><h2>Views / Reach over time</h2><span class="sub">summed across selected platforms</span></div>
+        <div class="head"><h2 data-i18n="ov_views_t">Views / Reach over time</h2><span class="sub" data-i18n="ov_views_s">summed across selected platforms</span></div>
         <div class="chart-box"><canvas id="cViews"></canvas></div>
       </div>
       <div class="card chart-card">
-        <div class="head"><h2>Engagements over time</h2><span class="sub">likes + comments + shares + saves</span></div>
+        <div class="head"><h2 data-i18n="ov_eng_t">Engagements over time</h2><span class="sub" data-i18n="ov_eng_s">likes + comments + shares + saves</span></div>
         <div class="chart-box"><canvas id="cEng"></canvas></div>
       </div>
     </div>
     <div class="grid two" style="margin-top:16px">
       <div class="card chart-card">
-        <div class="head"><h2>Share of audience</h2><span class="sub">current followers by platform</span></div>
+        <div class="head"><h2 data-i18n="ov_share_t">Share of audience</h2><span class="sub" data-i18n="ov_share_s">current followers by platform</span></div>
         <div class="chart-box short"><canvas id="cAudShare"></canvas></div>
       </div>
       <div class="card chart-card">
-        <div class="head"><h2>Engagement rate by platform</h2><span class="sub">avg over selected range</span></div>
+        <div class="head"><h2 data-i18n="ov_er_t">Engagement rate by platform</h2><span class="sub" data-i18n="ov_er_s">avg over selected range</span></div>
         <div class="chart-box short"><canvas id="cErBar"></canvas></div>
       </div>
     </div>
@@ -177,61 +178,61 @@
   <section data-pane="content" class="hide">
     <div class="grid two">
       <div class="card chart-card">
-        <div class="head"><h2>Avg engagement rate by format</h2><span class="sub">which formats resonate</span></div>
+        <div class="head"><h2 data-i18n="ct_fmt_t">Avg engagement rate by format</h2><span class="sub" data-i18n="ct_fmt_s">which formats resonate</span></div>
         <div class="chart-box"><canvas id="cFmtEr"></canvas></div>
       </div>
       <div class="card chart-card">
-        <div class="head"><h2>Best day to post</h2><span class="sub">avg engagement rate by weekday</span></div>
+        <div class="head"><h2 data-i18n="ct_day_t">Best day to post</h2><span class="sub" data-i18n="ct_day_s">avg engagement rate by weekday</span></div>
         <div class="chart-box"><canvas id="cWeekday"></canvas></div>
       </div>
     </div>
     <div class="grid two" style="margin-top:16px">
       <div class="card chart-card">
-        <div class="head"><h2>Top content topics</h2><span class="sub">avg views per post, by topic</span></div>
+        <div class="head"><h2 data-i18n="ct_topics_t">Top content topics</h2><span class="sub" data-i18n="ct_topics_s">avg views per post, by topic</span></div>
         <div class="chart-box"><canvas id="cThemes"></canvas></div>
       </div>
       <div class="card chart-card">
-        <div class="head"><h2>Keywords in your top 10</h2><span class="sub">topics that land in your best posts</span></div>
+        <div class="head"><h2 data-i18n="ct_kw_t">Keywords in your top 10</h2><span class="sub" data-i18n="ct_kw_s">topics that land in your best posts</span></div>
         <div class="table-scroll">
         <table id="kwTable">
-          <thead><tr><th>Topic / keyword</th><th class="num">In top 10</th><th class="num">Avg views</th><th class="num">Eng. rate</th><th class="num">Posts</th></tr></thead>
+          <thead><tr><th data-i18n="kw_h_topic">Topic / keyword</th><th class="num" data-i18n="kw_h_top10">In top 10</th><th class="num" data-i18n="kw_h_views">Avg views</th><th class="num" data-i18n="kw_h_er">Eng. rate</th><th class="num" data-i18n="kw_h_posts">Posts</th></tr></thead>
           <tbody></tbody>
         </table>
         </div>
-        <div class="legend-note">Lean into topics with high avg views &amp; top-10 hits; rework the rest.</div>
+        <div class="legend-note" data-i18n="ct_kw_note">Lean into topics with high avg views &amp; top-10 hits; rework the rest.</div>
       </div>
     </div>
     <div class="card chart-card" style="margin-top:16px">
-      <div class="head"><h2>Top performing content</h2><span class="sub" id="topCount"></span></div>
+      <div class="head"><h2 data-i18n="ct_top_t">Top performing content</h2><span class="sub" id="topCount"></span></div>
       <div class="table-scroll">
       <table id="topTable">
         <thead><tr>
-          <th>Platform</th><th>Published</th><th>Format</th><th>Title</th>
-          <th class="num">Views</th><th class="num">Engagements</th>
-          <th class="num">Eng. rate</th><th class="num">Revenue</th>
+          <th data-i18n="top_h_platform">Platform</th><th data-i18n="top_h_published">Published</th><th data-i18n="top_h_format">Format</th><th data-i18n="top_h_title">Title</th>
+          <th class="num" data-i18n="top_h_views">Views</th><th class="num" data-i18n="top_h_eng">Engagements</th>
+          <th class="num" data-i18n="top_h_er">Eng. rate</th><th class="num" data-i18n="top_h_rev">Revenue</th>
         </tr></thead>
         <tbody></tbody>
       </table>
       </div>
-      <div class="legend-note">Click a column header to sort.</div>
+      <div class="legend-note" data-i18n="ct_top_note">Click a column header to sort.</div>
     </div>
   </section>
 
   <!-- AUDIENCE -->
   <section data-pane="audience" class="hide">
     <div class="card chart-card">
-      <div class="head"><h2>Follower / subscriber growth</h2><span class="sub">cumulative, by platform</span></div>
+      <div class="head"><h2 data-i18n="aud_foll_t">Follower / subscriber growth</h2><span class="sub" data-i18n="aud_foll_s">cumulative, by platform</span></div>
       <div class="chart-box"><canvas id="cFollowers"></canvas></div>
     </div>
     <div class="grid two" style="margin-top:16px">
       <div class="card chart-card">
-        <div class="head"><h2>Net new followers / month</h2><span class="sub">gained minus lost</span></div>
+        <div class="head"><h2 data-i18n="aud_net_t">Net new followers / month</h2><span class="sub" data-i18n="aud_net_s">gained minus lost</span></div>
         <div class="chart-box short"><canvas id="cNetFollowers"></canvas></div>
       </div>
       <div class="card chart-card">
-        <div class="head"><h2>Growth summary</h2><span class="sub">selected range</span></div>
+        <div class="head"><h2 data-i18n="aud_growth_t">Growth summary</h2><span class="sub" data-i18n="aud_growth_s">selected range</span></div>
         <div class="chart-box short" style="overflow:auto"><table id="growthTable">
-          <thead><tr><th>Platform</th><th class="num">Start</th><th class="num">Now</th><th class="num">Net add</th><th class="num">Growth</th></tr></thead>
+          <thead><tr><th data-i18n="gr_h_platform">Platform</th><th class="num" data-i18n="gr_h_start">Start</th><th class="num" data-i18n="gr_h_now">Now</th><th class="num" data-i18n="gr_h_netadd">Net add</th><th class="num" data-i18n="gr_h_growth">Growth</th></tr></thead>
           <tbody></tbody></table></div>
       </div>
     </div>
@@ -241,23 +242,23 @@
   <section data-pane="money" class="hide">
     <div class="grid two">
       <div class="card chart-card">
-        <div class="head"><h2>Estimated revenue over time</h2><span class="sub">stacked by platform, monthly</span></div>
+        <div class="head"><h2 data-i18n="mn_rev_t">Estimated revenue over time</h2><span class="sub" data-i18n="mn_rev_s">stacked by platform, monthly</span></div>
         <div class="chart-box"><canvas id="cRevTime"></canvas></div>
       </div>
       <div class="card chart-card">
-        <div class="head"><h2>Revenue mix</h2><span class="sub">selected range</span></div>
+        <div class="head"><h2 data-i18n="mn_mix_t">Revenue mix</h2><span class="sub" data-i18n="mn_mix_s">selected range</span></div>
         <div class="chart-box short"><canvas id="cRevMix"></canvas></div>
       </div>
     </div>
     <div class="card chart-card" style="margin-top:16px">
-      <div class="head"><h2>Monetization efficiency</h2><span class="sub">revenue per 1,000 views (RPM) &amp; totals</span></div>
+      <div class="head"><h2 data-i18n="mn_eff_t">Monetization efficiency</h2><span class="sub" data-i18n="mn_eff_s">revenue per 1,000 views (RPM) &amp; totals</span></div>
       <div class="table-scroll">
       <table id="moneyTable">
-        <thead><tr><th>Platform</th><th class="num">Revenue (range)</th><th class="num">Views (range)</th><th class="num">Effective RPM</th><th class="num">Rev / follower</th></tr></thead>
+        <thead><tr><th data-i18n="mn_h_platform">Platform</th><th class="num" data-i18n="mn_h_rev">Revenue (range)</th><th class="num" data-i18n="mn_h_views">Views (range)</th><th class="num" data-i18n="mn_h_rpm">Effective RPM</th><th class="num" data-i18n="mn_h_revfoll">Rev / follower</th></tr></thead>
         <tbody></tbody>
       </table>
       </div>
-      <div class="legend-note">RPM = revenue per 1,000 views. YouTube uses ad RPM; Instagram approximates sponsor value from reach; TikTok uses Creativity Program payout.</div>
+      <div class="legend-note" data-i18n="mn_eff_note">RPM = revenue per 1,000 views. YouTube uses ad RPM; Instagram approximates sponsor value from reach; TikTok uses Creativity Program payout.</div>
     </div>
   </section>
 
@@ -277,6 +278,104 @@ const PF = {
 const fmtInt = n => (n>=1e9?(n/1e9).toFixed(2)+"B":n>=1e6?(n/1e6).toFixed(2)+"M":n>=1e3?(n/1e3).toFixed(1)+"K":Math.round(n).toLocaleString());
 const fmtUsd = n => "$"+(n>=1e6?(n/1e6).toFixed(2)+"M":n>=1e3?(n/1e3).toFixed(1)+"K":n.toFixed(0));
 const fmtPct = n => (n>=0?"+":"")+n.toFixed(1)+"%";
+
+/* ============ i18n (Indonesia default) ============ */
+const I18N = {
+  en: {
+    hdr_platforms:"Platforms:", hdr_range:"Range:",
+    range_mtd:"Month to date", range_30:"Last 30 days", range_90:"Last 90 days",
+    range_180:"Last 180 days", range_365:"Last 12 months",
+    tab_insights:"💡 Insights", tab_overview:"Cross-platform Overview",
+    tab_content:"Content Performance", tab_audience:"Audience Growth", tab_money:"Monetization",
+    ins_title:"What to do next", ins_sub:"auto-generated from your last 30 days & trends",
+    fc_title:"Forecast — next 3 months", fc_followers:"Followers", fc_views:"Views / month",
+    fc_revenue:"Revenue / month",
+    fc_note:"Dashed = projection (linear trend on recent complete months, summed across selected platforms). An estimate, not a guarantee.",
+    ov_views_t:"Views / Reach over time", ov_views_s:"summed across selected platforms",
+    ov_eng_t:"Engagements over time", ov_eng_s:"likes + comments + shares + saves",
+    ov_share_t:"Share of audience", ov_share_s:"current followers by platform",
+    ov_er_t:"Engagement rate by platform", ov_er_s:"avg over selected range",
+    ct_fmt_t:"Avg engagement rate by format", ct_fmt_s:"which formats resonate",
+    ct_day_t:"Best day to post", ct_day_s:"avg engagement rate by weekday",
+    ct_topics_t:"Top content topics", ct_topics_s:"avg views per post, by topic",
+    ct_kw_t:"Keywords in your top 10", ct_kw_s:"topics that land in your best posts",
+    ct_kw_note:"Lean into topics with high avg views & top-10 hits; rework the rest.",
+    kw_h_topic:"Topic / keyword", kw_h_top10:"In top 10", kw_h_views:"Avg views",
+    kw_h_er:"Eng. rate", kw_h_posts:"Posts",
+    ct_top_t:"Top performing content", ct_top_note:"Click a column header to sort.",
+    top_h_platform:"Platform", top_h_published:"Published", top_h_format:"Format",
+    top_h_title:"Title", top_h_views:"Views", top_h_eng:"Engagements",
+    top_h_er:"Eng. rate", top_h_rev:"Revenue",
+    aud_foll_t:"Follower / subscriber growth", aud_foll_s:"cumulative, by platform",
+    aud_net_t:"Net new followers / month", aud_net_s:"gained minus lost",
+    aud_growth_t:"Growth summary", aud_growth_s:"selected range",
+    gr_h_platform:"Platform", gr_h_start:"Start", gr_h_now:"Now", gr_h_netadd:"Net add", gr_h_growth:"Growth",
+    mn_rev_t:"Estimated revenue over time", mn_rev_s:"stacked by platform, monthly",
+    mn_mix_t:"Revenue mix", mn_mix_s:"selected range",
+    mn_eff_t:"Monetization efficiency", mn_eff_s:"revenue per 1,000 views (RPM) & totals",
+    mn_h_platform:"Platform", mn_h_rev:"Revenue (range)", mn_h_views:"Views (range)",
+    mn_h_rpm:"Effective RPM", mn_h_revfoll:"Rev / follower",
+    mn_eff_note:"RPM = revenue per 1,000 views. YouTube uses ad RPM; Instagram approximates sponsor value from reach; TikTok uses Creativity Program payout.",
+    kpi_followers:"Total followers", kpi_views:"Views · 30d", kpi_eng:"Engagements · 30d",
+    kpi_er:"Avg engagement rate", kpi_revenue:"Revenue · 30d", kpi_vsprior:"vs prior 30d",
+    lab_actual:"Actual", lab_projected:"Projected",
+    themes_tip:"avg {n} views/post", topcount:"{n} of {total} tracked",
+    weekdays:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
+    foot_rows:"daily rows", foot_posts:"posts", foot_rev12:"12-mo revenue",
+    src_demo:"synthetic sample data for demonstration",
+  },
+  id: {
+    hdr_platforms:"Platform:", hdr_range:"Periode:",
+    range_mtd:"Bulan berjalan", range_30:"30 hari terakhir", range_90:"90 hari terakhir",
+    range_180:"180 hari terakhir", range_365:"12 bulan terakhir",
+    tab_insights:"💡 Wawasan", tab_overview:"Ringkasan Lintas-platform",
+    tab_content:"Performa Konten", tab_audience:"Pertumbuhan Audiens", tab_money:"Monetisasi",
+    ins_title:"Apa yang harus dilakukan", ins_sub:"otomatis dari 30 hari terakhir & tren",
+    fc_title:"Proyeksi — 3 bulan ke depan", fc_followers:"Pengikut", fc_views:"Views / bulan",
+    fc_revenue:"Pendapatan / bulan",
+    fc_note:"Garis putus-putus = proyeksi (tren linear pada bulan lengkap terbaru, dijumlahkan untuk platform terpilih). Estimasi, bukan jaminan.",
+    ov_views_t:"Views / Jangkauan dari waktu ke waktu", ov_views_s:"dijumlahkan untuk platform terpilih",
+    ov_eng_t:"Interaksi dari waktu ke waktu", ov_eng_s:"suka + komentar + bagikan + simpan",
+    ov_share_t:"Porsi audiens", ov_share_s:"pengikut saat ini per platform",
+    ov_er_t:"Tingkat interaksi per platform", ov_er_s:"rata-rata pada periode terpilih",
+    ct_fmt_t:"Rata-rata tingkat interaksi per format", ct_fmt_s:"format mana yang paling mengena",
+    ct_day_t:"Hari terbaik untuk posting", ct_day_s:"rata-rata tingkat interaksi per hari",
+    ct_topics_t:"Topik konten teratas", ct_topics_s:"rata-rata views per post, per topik",
+    ct_kw_t:"Kata kunci di 10 besar", ct_kw_s:"topik yang masuk post terbaikmu",
+    ct_kw_note:"Perbanyak topik dengan views tinggi & masuk 10 besar; perbaiki sisanya.",
+    kw_h_topic:"Topik / kata kunci", kw_h_top10:"Di 10 besar", kw_h_views:"Rata-rata views",
+    kw_h_er:"Tingkat interaksi", kw_h_posts:"Post",
+    ct_top_t:"Konten dengan performa terbaik", ct_top_note:"Klik judul kolom untuk mengurutkan.",
+    top_h_platform:"Platform", top_h_published:"Tanggal", top_h_format:"Format",
+    top_h_title:"Judul", top_h_views:"Views", top_h_eng:"Interaksi",
+    top_h_er:"Tingkat interaksi", top_h_rev:"Pendapatan",
+    aud_foll_t:"Pertumbuhan pengikut / subscriber", aud_foll_s:"kumulatif, per platform",
+    aud_net_t:"Pengikut baru bersih / bulan", aud_net_s:"didapat dikurangi hilang",
+    aud_growth_t:"Ringkasan pertumbuhan", aud_growth_s:"periode terpilih",
+    gr_h_platform:"Platform", gr_h_start:"Awal", gr_h_now:"Sekarang", gr_h_netadd:"Tambah bersih", gr_h_growth:"Pertumbuhan",
+    mn_rev_t:"Estimasi pendapatan dari waktu ke waktu", mn_rev_s:"ditumpuk per platform, bulanan",
+    mn_mix_t:"Komposisi pendapatan", mn_mix_s:"periode terpilih",
+    mn_eff_t:"Efisiensi monetisasi", mn_eff_s:"pendapatan per 1.000 views (RPM) & total",
+    mn_h_platform:"Platform", mn_h_rev:"Pendapatan (periode)", mn_h_views:"Views (periode)",
+    mn_h_rpm:"RPM efektif", mn_h_revfoll:"Pendapatan / pengikut",
+    mn_eff_note:"RPM = pendapatan per 1.000 views. YouTube pakai RPM iklan; Instagram memperkirakan nilai sponsor dari jangkauan; TikTok pakai payout Creativity Program.",
+    kpi_followers:"Total pengikut", kpi_views:"Views · 30h", kpi_eng:"Interaksi · 30h",
+    kpi_er:"Rata-rata tingkat interaksi", kpi_revenue:"Pendapatan · 30h", kpi_vsprior:"vs 30h sebelumnya",
+    lab_actual:"Aktual", lab_projected:"Proyeksi",
+    themes_tip:"rata-rata {n} views/post", topcount:"{n} dari {total} terlacak",
+    weekdays:["Sen","Sel","Rab","Kam","Jum","Sab","Min"],
+    foot_rows:"baris harian", foot_posts:"post", foot_rev12:"pendapatan 12 bln",
+    src_demo:"data contoh sintetis untuk demonstrasi",
+  },
+};
+let lang = (["id","en"].includes("__INIT_LANG__") ? "__INIT_LANG__" : "id");
+function t(k){ return (I18N[lang] && I18N[lang][k]) ?? I18N.en[k] ?? k; }
+function applyLang(){
+  document.querySelectorAll("[data-i18n]").forEach(el=>{ const v=t(el.getAttribute("data-i18n")); if(v!=null) el.textContent=v; });
+  const lb=document.getElementById("langBtn"); if(lb) lb.textContent = (lang==="id"?"EN":"ID");
+  document.documentElement.lang = lang;
+  if(typeof renderFoot==="function") renderFoot();
+}
 
 let active = {youtube:true, instagram:true, tiktok:true};
 let rangeVal = "mtd";            // "mtd" or number-of-days as a string
@@ -314,17 +413,17 @@ function renderKpis(){
   const sum = (k)=> aps.reduce((s,p)=>s+(DATA.kpis[p][k]||0),0);
   const wavg = ()=>{ let v=0,w=0; aps.forEach(p=>{v+=DATA.kpis[p].eng_rate*DATA.kpis[p].followers; w+=DATA.kpis[p].followers;}); return w? v/w:0; };
   const cards = [
-    {h:"Total followers", v:fmtInt(sum("followers")), d:avgDelta("followers_chg_pct")},
-    {h:"Views · 30d", v:fmtInt(sum("views_30d")), d:avgDelta("views_chg_pct")},
-    {h:"Engagements · 30d", v:fmtInt(sum("engagements_30d")), d:avgDelta("engagements_chg_pct")},
-    {h:"Avg engagement rate", v:wavg().toFixed(2)+"%", d:null},
-    {h:"Revenue · 30d", v:fmtUsd(sum("revenue_30d")), d:avgDelta("revenue_chg_pct")},
+    {h:t("kpi_followers"), v:fmtInt(sum("followers")), d:avgDelta("followers_chg_pct")},
+    {h:t("kpi_views"), v:fmtInt(sum("views_30d")), d:avgDelta("views_chg_pct")},
+    {h:t("kpi_eng"), v:fmtInt(sum("engagements_30d")), d:avgDelta("engagements_chg_pct")},
+    {h:t("kpi_er"), v:wavg().toFixed(2)+"%", d:null},
+    {h:t("kpi_revenue"), v:fmtUsd(sum("revenue_30d")), d:avgDelta("revenue_chg_pct")},
   ];
   function avgDelta(k){ if(!aps.length)return 0; return aps.reduce((s,p)=>s+DATA.kpis[p][k],0)/aps.length; }
   el.innerHTML = cards.map(c=>{
     let d="";
     if(c.d!==null){ const cls=c.d>0.5?"up":c.d<-0.5?"down":"flat"; const arr=c.d>0.5?"▲":c.d<-0.5?"▼":"—";
-      d=`<div class="delta ${cls}">${arr} ${fmtPct(c.d)} <span style="color:var(--muted);font-weight:400">vs prior 30d</span></div>`; }
+      d=`<div class="delta ${cls}">${arr} ${fmtPct(c.d)} <span style="color:var(--muted);font-weight:400">${t("kpi_vsprior")}</span></div>`; }
     return `<div class="card"><h3>${c.h}</h3><div class="kpi-val">${c.v}</div>${d}</div>`;
   }).join("");
 }
@@ -388,7 +487,7 @@ function weekday(){
     return {label:PF[p].name,backgroundColor:PF[p].color,data:order.map(d=>m[d]||0)};
   });
   charts.cWeekday=new Chart(document.getElementById("cWeekday"),{type:"bar",
-    data:{labels:order.map(d=>d.slice(0,3)),datasets:ds},
+    data:{labels:t("weekdays"),datasets:ds},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"top",labels:{boxWidth:12}},
       tooltip:{callbacks:{label:c=>c.dataset.label+": "+c.parsed.y.toFixed(2)+"%"}}},
       scales:{y:{ticks:{callback:v=>v+"%"}}}}});
@@ -400,7 +499,7 @@ function topTable(){
   rows.sort((a,b)=>{let x=a[topSort.key],y=b[topSort.key];
     if(typeof x==="string"){return topSort.dir*x.localeCompare(y);} return topSort.dir*(x-y);});
   rows=rows.slice(0,15);
-  document.getElementById("topCount").textContent=rows.length+" of "+DATA.top_posts.length+" tracked";
+  document.getElementById("topCount").textContent=t("topcount").replace("{n}",rows.length).replace("{total}",DATA.top_posts.length);
   tb.innerHTML=rows.map(r=>`<tr>
     <td><span class="pill ${r.platform}">${PF[r.platform].name}</span></td>
     <td>${r.published}</td><td>${r.format}</td><td>${r.title}</td>
@@ -521,11 +620,15 @@ function scheduleFit(){ clearTimeout(_fitPending); _fitPending = setTimeout(fitF
 function renderInsights(){
   const el=document.getElementById("insightCards");
   const ICON={win:"📈",watch:"⚠️",tip:"💡",forecast:"🔮"};
-  el.innerHTML=(DATA.insights||[]).map(i=>`
-    <div class="insight ${i.kind}">
+  const useId = lang==="id";
+  el.innerHTML=(DATA.insights||[]).map(i=>{
+    const title = useId ? (i.title_id||i.title) : i.title;
+    const text  = useId ? (i.text_id||i.text)   : i.text;
+    return `<div class="insight ${i.kind}">
       <div class="ic">${ICON[i.kind]||"•"}</div>
-      <div><h4>${i.title}</h4><p>${i.text}</p></div>
-    </div>`).join("") || `<p class="sub">No insights available.</p>`;
+      <div><h4>${title}</h4><p>${text}</p></div>
+    </div>`;
+  }).join("") || `<p class="sub">${useId?"Belum ada wawasan.":"No insights available."}</p>`;
 }
 function forecastChart(){
   destroy("cForecast");
@@ -550,8 +653,8 @@ function forecastChart(){
   const fmt=isMoney?fmtUsd:fmtInt;
   charts.cForecast=new Chart(document.getElementById("cForecast"),{type:"line",
     data:{labels,datasets:[
-      {label:"Actual",data:actual,borderColor:"#6ea8fe",backgroundColor:"#6ea8fe22",tension:.3,pointRadius:0,borderWidth:2,fill:false},
-      {label:"Projected",data:proj,borderColor:"#a371f7",borderDash:[6,4],tension:.3,pointRadius:0,borderWidth:2,fill:false},
+      {label:t("lab_actual"),data:actual,borderColor:"#6ea8fe",backgroundColor:"#6ea8fe22",tension:.3,pointRadius:0,borderWidth:2,fill:false},
+      {label:t("lab_projected"),data:proj,borderColor:"#a371f7",borderDash:[6,4],tension:.3,pointRadius:0,borderWidth:2,fill:false},
     ]},
     options:{responsive:true,maintainAspectRatio:false,interaction:{mode:"index",intersect:false},
       plugins:{legend:{position:"top",labels:{boxWidth:12}},tooltip:{callbacks:{label:c=>c.parsed.y==null?"":c.dataset.label+": "+fmt(c.parsed.y)}}},
@@ -574,7 +677,7 @@ function themesChart(){
     data:{labels:rows.map(r=>r.theme),datasets:[{data:rows.map(r=>r.avg),
       backgroundColor:"#6ea8fe"}]},
     options:{indexAxis:"y",responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},
-      tooltip:{callbacks:{label:c=>"avg "+fmtInt(c.parsed.x)+" views/post"}}},
+      tooltip:{callbacks:{label:c=>t("themes_tip").replace("{n}",fmtInt(c.parsed.x))}}},
       scales:{x:{ticks:{callback:v=>fmtInt(v)}}}}});
 }
 function kwTable(){
@@ -605,13 +708,14 @@ function renderAll(){
 }
 
 /* ---------- interactions ---------- */
-document.querySelectorAll(".chip").forEach(ch=>ch.addEventListener("click",()=>{
+document.querySelectorAll(".chip[data-pf]").forEach(ch=>ch.addEventListener("click",()=>{
   const p=ch.dataset.pf; const on=ch.dataset.on==="1";
   if(on && activePlatforms().length===1)return; // keep at least one
   ch.dataset.on=on?"0":"1"; active[p]=!on; renderAll();
 }));
 document.getElementById("range").addEventListener("change",e=>{rangeVal=e.target.value; renderAll();});
 document.getElementById("fcMetric").addEventListener("change",e=>{fcMetric=e.target.value; forecastChart();});
+document.getElementById("langBtn").addEventListener("click",()=>{ lang = (lang==="id"?"en":"id"); applyLang(); renderAll(); });
 document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>{
   document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
   t.classList.add("active");
@@ -623,11 +727,17 @@ document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>{
 }));
 
 /* ---------- boot ---------- */
+function renderFoot(){
+  const dq=DATA.data_quality;
+  const rawSrc=DATA.profile.source_label||"";
+  const src=(lang==="id" && /synthetic sample data/.test(rawSrc)) ? t("src_demo") : rawSrc;
+  document.getElementById("foot").textContent=
+    `${dq.daily_rows.toLocaleString()} ${t("foot_rows")} · ${dq.post_rows.toLocaleString()} ${t("foot_posts")} · ${t("foot_rev12")} ${fmtUsd(DATA.totals.revenue_12mo)} · ${src}`;
+}
 document.getElementById("title").textContent=DATA.profile.creator+" · Creator Analytics";
 document.getElementById("subtitle").textContent=
   `${DATA.profile.handle} · ${DATA.profile.niche} · data ${DATA.profile.start_date} → ${DATA.profile.end_date}`;
-document.getElementById("foot").textContent=
-  `${DATA.data_quality.daily_rows.toLocaleString()} daily rows · ${DATA.data_quality.post_rows.toLocaleString()} posts · 12-mo revenue ${fmtUsd(DATA.totals.revenue_12mo)} · ${DATA.profile.source_label||"sample data for demonstration"}`;
+applyLang();      // localize static text + footer before first render
 renderAll();
 
 /* Keep the embedding iframe sized to content as layout/charts settle, and

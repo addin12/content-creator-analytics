@@ -41,6 +41,7 @@ Creators live across three platforms that each report numbers differently — di
 - **🔌 Three platforms, one schema** — YouTube, Instagram & TikTok normalized into a single canonical model.
 - **🧪 Runs with zero setup** — a built-in synthetic generator produces a full, realistic year of data using only the Python standard library. `python run.py --demo` → instant dashboard.
 - **🔑 Live-ready** — real API connectors (YouTube Data + Analytics, Instagram Graph, TikTok) activate automatically when you add credentials; anything not connected stays synthetic, so it never half-breaks.
+- **🌐 Bilingual (ID / EN)** — opens in **Bahasa Indonesia** by default with a one-click language toggle; tabs, labels, insights, forecasts and the footer all switch language.
 - **🎛️ Fully interactive** — toggle platforms, switch the time range (**month-to-date** default, plus 30 / 90 / 180 / 365 days), sort the content table — everything recomputes client-side. Responsive on desktop & mobile.
 - **💸 Honest monetization model** — real ad RPM for YouTube; transparent, configurable *estimates* for Instagram (sponsor value from reach) and TikTok (Creativity Program payout).
 - **☁️ One-click deploy** to Streamlit Community Cloud (free).

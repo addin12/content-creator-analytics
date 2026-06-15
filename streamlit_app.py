@@ -29,15 +29,33 @@ import streamlit.components.v1 as components
 from src.ingest.base import get_connector
 from src.transform.normalize import normalize_daily, normalize_posts
 from src.analytics.build_data import build_data
-from src.dashboard.build import TEMPLATE, PLACEHOLDER
-
-import json
+from src.dashboard.build import render_html
 
 ROOT = Path(__file__).resolve().parent
 PLATFORMS = ["youtube", "instagram", "tiktok"]
 # Bump whenever the DATA shape changes so @st.cache_data can't serve a stale
 # payload (a cached old-shape payload + new template = broken dashboard).
-SCHEMA_VERSION = 3
+SCHEMA_VERSION = 4
+
+# Sidebar strings per language (the dashboard itself localizes via its own toggle).
+SIDE = {
+    "id": {
+        "caption": "Dasbor lintas-platform · YouTube · Instagram · TikTok",
+        "datasource": "Sumber data", "demo": "Demo (sintetis)", "live": "Live (dari secrets)",
+        "help": "Live memakai token API di Streamlit secrets. Platform tanpa token otomatis pakai data sintetis.",
+        "platforms": "Platform", "profile": "Profil kreator",
+        "name": "Nama", "handle": "Handle", "niche": "Niche",
+        "note": "Gunakan **chip, pemilih periode, dan tab** di dalam dasbor untuk memfilter platform, mengubah rentang waktu, dan berganti tampilan.",
+    },
+    "en": {
+        "caption": "Cross-platform dashboard · YouTube · Instagram · TikTok",
+        "datasource": "Data source", "demo": "Demo (synthetic)", "live": "Live (from secrets)",
+        "help": "Live uses API tokens in Streamlit secrets. Platforms without tokens fall back to synthetic automatically.",
+        "platforms": "Platforms", "profile": "Creator profile",
+        "name": "Name", "handle": "Handle", "niche": "Niche",
+        "note": "Use the **chips, range selector, and tabs** inside the dashboard to filter platforms, change the time window, and switch views.",
+    },
+}
 
 st.set_page_config(page_title="Creator Analytics", page_icon="📊", layout="wide")
 
@@ -97,10 +115,8 @@ def build_payload(mode: str, platforms: tuple[str, ...],
     return build_data(daily, posts, profile)
 
 
-def render(data: dict) -> None:
-    template = TEMPLATE.read_text(encoding="utf-8")
-    payload = json.dumps(data, ensure_ascii=False, separators=(",", ":"))
-    html = template.replace(PLACEHOLDER, payload)
+def render(data: dict, lang: str = "id") -> None:
+    html = render_html(data, lang)
     # The dashboard auto-grows its own iframe to fit content (responsive on
     # desktop & mobile). `height` is just the initial size; `scrolling` is a
     # fallback if the host sandbox blocks the auto-resize.
@@ -111,30 +127,29 @@ def render(data: dict) -> None:
 _load_secrets_into_env()
 
 st.sidebar.title("📊 Creator Analytics")
-st.sidebar.caption("Cross-platform dashboard · YouTube · Instagram · TikTok")
 
-source = st.sidebar.radio(
-    "Data source",
-    ["Demo (synthetic)", "Live (from secrets)"],
-    help="Live uses API tokens stored in Streamlit secrets. Platforms without "
-         "tokens fall back to synthetic automatically.",
-)
-mode = "demo" if source.startswith("Demo") else "auto"
+# Language — Indonesia first / default.
+lang = st.sidebar.radio(
+    "Bahasa / Language", ["🇮🇩 Indonesia", "🇬🇧 English"], index=0,
+) == "🇬🇧 English" and "en" or "id"
+S = SIDE[lang]
+
+st.sidebar.caption(S["caption"])
+
+source = st.sidebar.radio(S["datasource"], [S["demo"], S["live"]], help=S["help"])
+mode = "demo" if source == S["demo"] else "auto"
 
 selected = st.sidebar.multiselect(
-    "Platforms", PLATFORMS, default=PLATFORMS,
+    S["platforms"], PLATFORMS, default=PLATFORMS,
     format_func=lambda p: p.capitalize(),
 ) or PLATFORMS
 
-with st.sidebar.expander("Creator profile"):
-    creator = st.text_input("Name", "Maya Rivera")
-    handle = st.text_input("Handle", "@mayacreates")
-    niche = st.text_input("Niche", "Tech & lifestyle")
+with st.sidebar.expander(S["profile"]):
+    creator = st.text_input(S["name"], "Maya Rivera")
+    handle = st.text_input(S["handle"], "@mayacreates")
+    niche = st.text_input(S["niche"], "Tech & lifestyle")
 
-st.sidebar.markdown(
-    "Use the **chips, range selector, and tabs** inside the dashboard to "
-    "filter platforms, change the time window, and switch views."
-)
+st.sidebar.markdown(S["note"])
 
 data = build_payload(mode, tuple(selected), creator, handle, niche, SCHEMA_VERSION)
-render(data)
+render(data, lang)

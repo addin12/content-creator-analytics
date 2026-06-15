@@ -441,14 +441,24 @@ function moneyTable(){
 function fitFrame(){
   try{
     const fe = window.frameElement;
-    if(!fe) return;
-    const h = Math.ceil(document.documentElement.getBoundingClientRect().height) + 8;
+    if(!fe) return;                         // standalone (not embedded): nothing to do
+    // scrollHeight = full content height even when it overflows the iframe.
+    const h = Math.max(
+      document.body ? document.body.scrollHeight : 0,
+      document.documentElement.scrollHeight
+    ) + 2;
+    const cur = parseInt(fe.getAttribute("height"), 10) || 0;
+    if(Math.abs(cur - h) < 3) return;       // already the right size -> no-op (kills feedback loops)
+    // Set ONLY the iframe height. Its wrapper auto-grows; Streamlit's scroll
+    // container (section.stMain, overflow:auto) then scrolls the whole thing
+    // naturally. Do NOT touch ancestors -- forcing their height disables that
+    // scroll and the fixed app container clips the bottom.
     fe.style.height = h + "px";
-    fe.setAttribute("height", h);
-    let el = fe.parentElement, n = 0;            // clear fixed heights Streamlit sets
-    while(el && n++ < 5){ el.style.height = "auto"; el.style.maxHeight = "none"; el = el.parentElement; }
-  }catch(e){/* cross-origin sandbox: rely on iframe scrolling fallback */}
+    fe.setAttribute("height", String(h));
+  }catch(e){/* sandbox blocks frameElement -> iframe scrolling is the fallback */}
 }
+let _fitPending;
+function scheduleFit(){ clearTimeout(_fitPending); _fitPending = setTimeout(fitFrame, 120); }
 
 /* ---------- render orchestration ---------- */
 function renderAll(){
@@ -487,10 +497,16 @@ document.getElementById("foot").textContent=
   `${DATA.data_quality.daily_rows.toLocaleString()} daily rows · ${DATA.data_quality.post_rows.toLocaleString()} posts · 12-mo revenue ${fmtUsd(DATA.totals.revenue_12mo)} · ${DATA.profile.source_label||"sample data for demonstration"}`;
 renderAll();
 
-/* keep the embedding iframe sized to content as layout/charts settle */
-window.addEventListener("resize", fitFrame);
-if (window.ResizeObserver) new ResizeObserver(fitFrame).observe(document.body);
-[150,500,1200].forEach(t=>setTimeout(fitFrame,t));
+/* Keep the embedding iframe sized to content as layout/charts settle, and
+   re-assert (debounced) if the host (Streamlit) resets the height on a
+   re-render. No body ResizeObserver -> avoids the resize feedback loop. */
+window.addEventListener("resize", scheduleFit);
+[250,700,1500,3000].forEach(t=>setTimeout(fitFrame,t));
+try{
+  if(window.frameElement && window.MutationObserver){
+    new MutationObserver(scheduleFit).observe(window.frameElement,{attributes:true,attributeFilter:["height","style"]});
+  }
+}catch(e){}
 </script>
 </body>
 </html>

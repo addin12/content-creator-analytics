@@ -529,6 +529,7 @@ function renderInsights(){
 }
 function forecastChart(){
   destroy("cForecast");
+  if(!DATA.forecast || !DATA.forecast.platforms) return;   // graceful: older data shape
   const aps=activePlatforms();
   const hist=DATA.monthly.filter(r=>active[r.platform]);
   const histMonths=[...new Set(hist.map(r=>r.month))].sort();
@@ -563,7 +564,7 @@ function themesChart(){
   const aps=activePlatforms();
   // aggregate theme_performance across active platforms
   const m={};
-  DATA.theme_performance.filter(r=>active[r.platform]).forEach(r=>{
+  (DATA.theme_performance||[]).filter(r=>active[r.platform]).forEach(r=>{
     const a=m[r.theme]||(m[r.theme]={views:0,posts:0});
     a.views+=r.avg_views*r.posts; a.posts+=r.posts;
   });
@@ -588,15 +589,18 @@ function kwTable(){
 }
 
 /* ---------- render orchestration ---------- */
+function safe(fn){ try{ fn(); }catch(e){ console.error("render error:", e); } }
 function renderAll(){
-  renderKpis();
-  renderInsights(); forecastChart();
-  lineByMetric("cViews","views","Views");
-  lineByMetric("cEng","engagements","Engagements");
-  audienceShare(); erBar();
-  fmtEr(); weekday(); themesChart(); kwTable(); topTable();
-  followers(); netFollowers(); growthTable();
-  revTime(); revMix(); moneyTable();
+  // Each panel is isolated so one failure (e.g. an unexpected data shape)
+  // can't blank the whole dashboard.
+  safe(renderKpis);
+  safe(renderInsights); safe(forecastChart);
+  safe(()=>lineByMetric("cViews","views","Views"));
+  safe(()=>lineByMetric("cEng","engagements","Engagements"));
+  safe(audienceShare); safe(erBar);
+  safe(fmtEr); safe(weekday); safe(themesChart); safe(kwTable); safe(topTable);
+  safe(followers); safe(netFollowers); safe(growthTable);
+  safe(revTime); safe(revMix); safe(moneyTable);
   fitFrame();
 }
 

@@ -35,6 +35,9 @@ import json
 
 ROOT = Path(__file__).resolve().parent
 PLATFORMS = ["youtube", "instagram", "tiktok"]
+# Bump whenever the DATA shape changes so @st.cache_data can't serve a stale
+# payload (a cached old-shape payload + new template = broken dashboard).
+SCHEMA_VERSION = 3
 
 st.set_page_config(page_title="Creator Analytics", page_icon="📊", layout="wide")
 
@@ -63,7 +66,10 @@ def _load_secrets_into_env() -> None:
 
 @st.cache_data(ttl=3600, show_spinner="Building dashboard data…")
 def build_payload(mode: str, platforms: tuple[str, ...],
-                  creator: str, handle: str, niche: str) -> dict:
+                  creator: str, handle: str, niche: str,
+                  schema_version: int = SCHEMA_VERSION) -> dict:
+    # schema_version is unused in the body; it's part of the cache key so a
+    # DATA-shape change invalidates any previously cached payload.
     end = date.today() - timedelta(days=1)
     start = end - timedelta(days=364)
     cfg = {"creator": creator, "platforms": {p: {} for p in platforms}}
@@ -130,5 +136,5 @@ st.sidebar.markdown(
     "filter platforms, change the time window, and switch views."
 )
 
-data = build_payload(mode, tuple(selected), creator, handle, niche)
+data = build_payload(mode, tuple(selected), creator, handle, niche, SCHEMA_VERSION)
 render(data)
